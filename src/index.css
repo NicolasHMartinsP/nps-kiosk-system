@@ -1,0 +1,52 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  background-color: #fefefe;
+}
+button {
+  cursor: pointer;
+}
+.logo-floating {
+  position: fixed;
+  top: 30px;
+  left: 20px;
+  width: 60px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.Hover {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  background-color: #000000;
+  padding: 10px 90px;
+  min-height: 80px;
+}
+
+#titleSearch {
+  font-size: 2em;
+  text-align: center;
+  padding: 10px;
+  color: white;
+}
+.BotaoModal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.highlight {
+  color: #ffcc00;
+  font-weight: bold;
+}
+.linhabaixa {
+  display: block;
+  margin-top: 10px;
+}
