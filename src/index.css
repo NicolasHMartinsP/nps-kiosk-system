@@ -1,14 +1,60 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@keyframes pulseScale {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes glowPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0px rgba(254, 179, 43, 0.6);
+  }
+
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 25px rgba(254, 179, 43, 0.9);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0px rgba(254, 179, 43, 0.6);
+  }
+}
+@font-face {
+  font-family: "textgyreschola.regular";
+  src: url("./assets/Fonts/texgyreschola-regular.otf");
+}
+@font-face {
+  font-family: "textgyreschola.bold";
+  src: url("./assets/Fonts/texgyreschola-bold.otf");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "novabold";
+  src: url("./assets/Fonts/novabold.otf");
+  font-weight: normal;
+  font-style: normal;
+}
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 body {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   background-color: #ffffff;
+  margin: 0;
+  padding: 0;
 }
 
 .logo-floating {
@@ -22,26 +68,18 @@ body {
 
 .Hover {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: #000000;
   padding: 5px 50px;
-  min-height: 30px;
+  gap: 20px;
 }
 
 #titleSearch {
   font-size: 2em;
   text-align: center;
-  padding: 10px;
   color: white;
-}
-.BotaoModal {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  margin: 20px;
-  cursor: pointer;
 }
 
 .highlight {
@@ -57,4 +95,96 @@ body {
   display: flex;
   padding: 70px 70px;
   background-color: #ffae00;
+}
+.separador {
+  background-color: black;
+  padding-bottom: 60px;
+}
+.pulseScale {
+  animation: pulseScale 2s infinite;
+}
+.glowButton {
+  animation: glowPulse 2s infinite;
+}
+.ModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.6);
+
+  z-index: 9999;
+}
+
+.modalContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  width: 650px;
+  height: 600px;
+  padding: 40px;
+  border-radius: 25px;
+  background: #ffae00;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+}
+.modalQuestion {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 600;
+  margin: 40px 0;
+}
+.avaliacao {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+.avaliacao button {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  background: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.avaliacao button:hover {
+  transform: scale(1.1);
+  background: #ffe08a;
+}
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+.actions button {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.actions button:hover {
+  transform: scale(1.05);
+}
+.modalHeader button {
+  background: transparent;
+  border: none;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
 }
