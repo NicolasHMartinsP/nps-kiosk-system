@@ -1,0 +1,83 @@
+Data;Hora;Tipo;Valor;Motivo;Verificada
+26-02-2026;16:14:50;Saida;16.11;frutas banana e manga;Sim
+26-02-2026;16:31:59;Saida;16.11;frutas;Sim
+26-02-2026;17:12:15;Saida;300.00;sangria elaine ;Sim
+26-02-2026;17:58:53;Saida;40.00;decora o de pascoa paty ;Sim
+26-02-2026;18:29:10;Saida;5.00;consumo pago Rafa 5 reais Kau ;Sim
+26-02-2026;19:17:43;Saida;24.00;motoboy jair;Sim
+26-02-2026;21:35:07;Saida;78.00;free teste;Sim
+27-02-2026;14:45:20;Saida;435.00;15 kilos morango aule do dia 24 02;Sim
+27-02-2026;15:15:05;Saida;50.00;consulta qualy vida kauan ;Sim
+27-02-2026;16:41:18;Saida;42.59;mangas para o bife;Sim
+27-02-2026;16:49:33;Saida;29.80;alcool em gel;Sim
+27-02-2026;19:19:40;Saida;66.00;free teste;Sim
+27-02-2026;19:43:38;Saida;32.00;motoboy jair;Sim
+27-02-2026;20:12:16;Saida;6.00;consumo marcado 6 00 Rafa Elaine ;Sim
+28-02-2026;16:11:38;Saida;40.00;lanche ;Sim
+28-02-2026;18:51:13;Saida;104.00;teste Jaqueline ;Sim
+28-02-2026;18:55:32;Saida;117.00; teste kauan ;Sim
+28-02-2026;19:54:21;Saida;60.00;Motoboy Jair;Sim
+28-02-2026;19:55:20;Saida;0.01;consumo pago 5 00 jair Elaine ;Sim
+28-02-2026;21:48:48;Saida;1000.00;sangria;Sim
+01-03-2026;14:09:47;Saida;63.00;consumo pg paty 63 00 rafa ;Sim
+01-03-2026;17:47:21;Saida;43.00;motoboy jair;Sim
+01-03-2026;19:37:37;Saida;43.57;lanche;Sim
+01-03-2026;20:38:38;Saida;13.00;consumo pg rafa 13 00 adriana ;Sim
+01-03-2026;21:36:58;Saida;104.00;free lancer;Sim
+01-03-2026;21:37:13;Saida;117.00;free lancer;Sim
+01-03-2026;21:44:54;Saida;2000.00;sangria rafa;Sim
+02-03-2026;15:01:32;Saida;40.00;compras de potes;Sim
+02-03-2026;17:02:24;Saida;240.00;morangos do Juliano;Sim
+02-03-2026;19:58:46;Saida;53.00;motoboy jair;Sim
+02-03-2026;21:21:33;Saida;78.00;free teste;Sim
+02-03-2026;21:32:06;Saida;300.00;sangria rafa;Sim
+03-03-2026;14:12:49;Saida;90.00;morangos Vanderleia;Sim
+03-03-2026;14:24:49;Saida;20.00;Enforca gato;Sim
+03-03-2026;16:40:26;Saida;150.00;MORANGOS AULE;Sim
+03-03-2026;16:44:58;Saida;40.00;BANDEJAS PARA PASCOA NO FRIZER;Sim
+03-03-2026;16:51:35;Saida;0.01;CONSUMO PAGO 7 90 Rafa Elaine ;Sim
+03-03-2026;19:04:39;Saida;53.00;motoboy jair;Sim
+03-03-2026;20:07:32;Saida;59.00;embalagens pascoa paty;Sim
+03-03-2026;21:34:45;Saida;78.00;free teste;Sim
+04-03-2026;16:03:45;Saida;265.99;Energetico e banana;Sim
+04-03-2026;16:56:38;Saida;400.00;sangria elaine;Sim
+04-03-2026;18:52:50;Saida;0.01;Consumo pg rafa 5 00 reais KAU ;Sim
+04-03-2026;21:17:34;Saida;11.00;motoboy jair;Sim
+04-03-2026;21:18:02;Saida;78.00;free teste;Sim
+05-03-2026;17:02:16;Saida;600.00;Sangria Elaine ;Sim
+05-03-2026;19:25:15;Saida;60.00;motoboy jair;Sim
+05-03-2026;20:40:09;Saida;9.00;Outros;Sim
+05-03-2026;20:43:05;Saida;9.00;consumo marcado Rafa 9 00 Kau ;Sim
+05-03-2026;21:35:14;Saida;400.00;sangria rafa;Sim
+06-03-2026;13:09:02;Entrada;500.00;caixa troco 500 pg morango paty ;Sim
+06-03-2026;14:41:23;Saida;435.00;15 k de morangos Aule ;Sim
+06-03-2026;14:48:38;Saida;196.66; frutas e leite coca cola;Sim
+06-03-2026;15:16:36;Saida;170.00;morangos Juliano;Sim
+06-03-2026;16:43:26;Saida;450.00;sangria Elaine ;Sim
+06-03-2026;20:52:05;Saida;32.00;motoboy jair;Sim
+07-03-2026;15:37:40;Saida;21.96;lanche;Sim
+07-03-2026;18:09:24;Saida;32.00;motoboy jair;Sim
+07-03-2026;19:49:46;Saida;50.00;free jaqueline;Sim
+07-03-2026;20:16:28;Saida;6.00;consumo marcado rafa 6 00 kau ;Sim
+07-03-2026;21:20:37;Saida;850.00;sangria rafa;Sim
+08-03-2026;17:37:27;Saida;27.93;lanche pastel e enroladinho;Sim
+08-03-2026;17:41:48;Saida;107.00;motoboy Marcelo;Sim
+08-03-2026;21:10:04;Saida;68.00;free Adriana;Sim
+08-03-2026;21:14:26;Saida;117.00;free Jaqueline;Sim
+08-03-2026;21:20:16;Saida;800.00;Sangria Elaine ;Sim
+09-03-2026;16:47:11;Saida;10.00;copias;Sim
+09-03-2026;16:59:29;Saida;600.00;Sangria Elaine ;Sim
+09-03-2026;18:44:34;Saida;30.00;consumo marcado elaine 30 00 rafa ;Sim
+09-03-2026;19:32:16;Saida;60.00;motoboy jair;Sim
+09-03-2026;21:27:27;Saida;250.00;sangria rafa;Sim
+10-03-2026;12:28:09;Saida;90.00;morangos ;Sim
+10-03-2026;16:43:51;Saida;200.00;Sangria Elaine ;Sim
+10-03-2026;19:05:42;Saida;22.00;motoboy jair;Sim
+10-03-2026;21:19:02;Saida;120.00;free lancer;Sim
+11-03-2026;16:51:00;Saida;350.00;sangria Elaine ;Sim
+11-03-2026;17:45:33;Saida;6.00;concumo marcado 6 00 Rafa Elaine ;Sim
+11-03-2026;21:02:09;Saida;60.00;free jaqueline;Sim
+11-03-2026;21:19:58;Saida;250.00;sangria rafa;Sim
+12-03-2026;15:21:01;Entrada;250.00;entrada cx troco 250 00 pg morango;Sim
+12-03-2026;17:01:39;Saida;62.00;motoboy jair;Sim
+12-03-2026;21:12:22;Saida;65.00;free daiane;Sim

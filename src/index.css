@@ -1,6 +1,34 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ---------------- ANIMAÇÕES ---------------- */
+@keyframes swipeHint {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(8px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+}
+@keyframes modalUp {
+  from {
+    transform: translateY(240px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(15px);
+    opacity: 1;
+  }
+}
+
 @keyframes pulseScale {
   0% {
     transform: scale(1);
@@ -14,70 +42,83 @@
     transform: scale(1);
   }
 }
+
 @keyframes glowPulse {
   0% {
     transform: scale(1);
     box-shadow: 0 0 0px rgba(254, 179, 43, 0.6);
   }
-
   50% {
     transform: scale(1.08);
     box-shadow: 0 0 25px rgba(254, 179, 43, 0.9);
   }
-
   100% {
     transform: scale(1);
     box-shadow: 0 0 0px rgba(254, 179, 43, 0.6);
   }
 }
+/* ---------------- FONTES ---------------- */
+
 @font-face {
   font-family: "textgyreschola.regular";
   src: url("./assets/Fonts/texgyreschola-regular.otf");
 }
+
 @font-face {
   font-family: "textgyreschola.bold";
   src: url("./assets/Fonts/texgyreschola-bold.otf");
-  font-weight: normal;
-  font-style: normal;
 }
+
 @font-face {
   font-family: "novabold";
   src: url("./assets/Fonts/novabold.otf");
-  font-weight: normal;
-  font-style: normal;
 }
+
+/* ---------------- RESET ---------------- */
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
+
 body {
-  background-color: #ffffff;
+  background: #ffffff;
   margin: 0;
   padding: 0;
 }
+
+/* ---------------- LOGO ---------------- */
 
 .logo-floating {
   position: fixed;
   top: 30px;
   left: 20px;
+
   width: 60px;
+
   cursor: pointer;
   z-index: 1000;
 }
 
+/* ---------------- HERO ---------------- */
+
 .Hover {
   display: flex;
   flex-direction: column;
+
   justify-content: center;
   align-items: center;
-  background-color: #000000;
+
+  background: #000;
+
   padding: 5px 50px;
   gap: 20px;
 }
 
 #titleSearch {
-  font-size: 2em;
+  padding-top: 35px;
+  font-size: 28px;
   text-align: center;
   color: white;
 }
@@ -86,105 +127,340 @@ body {
   color: #ff8c00;
   font-weight: bold;
 }
+
 .linhabaixa {
   display: block;
-  margin-top: 5px;
+  margin-top: 15px;
 }
+
+/* ---------------- SEÇÕES ---------------- */
 
 #modal {
   display: flex;
   padding: 70px 70px;
-  background-color: #ffae00;
+  background: #ffae00;
 }
+
 .separador {
-  background-color: black;
-  padding-bottom: 60px;
+  background: black;
+  padding-bottom: 30px;
+  padding-top: 20px;
 }
+
+/* ---------------- BOTÕES ANIMADOS ---------------- */
+
 .pulseScale {
   animation: pulseScale 2s infinite;
 }
+
 .glowButton {
   animation: glowPulse 2s infinite;
 }
+
+/* ---------------- OVERLAY ---------------- */
+
 .ModalOverlay {
   position: fixed;
+
   top: 0;
   left: 0;
+
   width: 100%;
   height: 100%;
 
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(0, 0, 0, 0.6);
+
+  background: rgba(0, 0, 0, 0.65);
 
   z-index: 9999;
 }
 
+/* ---------------- CONTAINER ---------------- */
+
 .modalContainer {
+  width: 650px;
+  height: 600px;
+
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 
-  width: 650px;
-  height: 600px;
   padding: 40px;
+
   border-radius: 25px;
+
   background: #ffae00;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+
+  animation: modalUp 0.35s ease;
 }
+
+/* ---------------- HEADER ---------------- */
+
 .modalHeader {
+  position: relative;
+
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+
   font-weight: bold;
 }
+
+/* X fechar */
+
+.closeBtn {
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  background: transparent;
+  border: none;
+
+  font-size: 26px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.closeBtn:hover {
+  transform: scale(1.15);
+}
+
+/* ---------------- PERGUNTA ---------------- */
+
 .modalQuestion {
   text-align: center;
-  font-size: 28px;
+
+  font-size: 35px;
   font-weight: 600;
-  margin: 40px 0;
+
+  margin: 30px 0px 50px 0px;
 }
+.modalQuestion h1 {
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.35;
+}
+
+/* ---------------- AVALIAÇÃO ---------------- */
+
 .avaliacao {
   display: flex;
   justify-content: center;
+  align-items: center;
+
   gap: 15px;
 }
-.avaliacao button {
-  width: 50px;
-  height: 50px;
-  border: none;
+
+/* botão base */
+
+.nota {
+  width: 70px;
+  height: 70px;
+
   border-radius: 10px;
-  font-size: 18px;
+  border: none;
+
+  font-size: 33px;
   font-weight: bold;
-  background: white;
+
   cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.nota:hover {
+  transform: scale(1.08);
+}
+
+.nota:active {
+  transform: scale(0.9);
+}
+
+/* cores */
+
+.nota-1 {
+  background: linear-gradient(135deg, red, #ff7a7a);
+}
+
+.nota-2 {
+  background: linear-gradient(135deg, rgb(247, 59, 59), #ff7aa2);
+}
+
+.nota-3 {
+  background: linear-gradient(135deg, yellow, #ffe88c);
+}
+
+.nota-4 {
+  background: linear-gradient(135deg, lightgreen, #4ade80);
+}
+
+.nota-5 {
+  background: linear-gradient(135deg, #22c55e, green);
+}
+
+/* selecionado */
+
+.selecionado {
+  border: 3px solid white;
+
+  transform: scale(1.15);
+
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.8);
+}
+
+/* ---------------- TEXTAREA ---------------- */
+
+.observacao textarea {
+  width: 100%;
+  height: 150px;
+
+  padding: 12px;
+
+  border-radius: 20px;
+
+  border: 2px solid #ccc;
+
+  background: #f9f9f9;
+
+  font-size: 20px;
+
+  resize: none;
+
   transition: 0.2s;
 }
-.avaliacao button:hover {
-  transform: scale(1.1);
-  background: #ffe08a;
+
+.observacao textarea::placeholder {
+  color: #999;
 }
-.actions {
+
+.observacao textarea:focus {
+  outline: none;
+
+  border: 2px solid #4ade80;
+
+  background: #ffffff;
+}
+
+/* ---------------- NAVEGAÇÃO ---------------- */
+
+.navigation {
   display: flex;
-  justify-content: center;
-  gap: 20px;
+
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  margin-top: 10px;
 }
-.actions button {
-  padding: 12px 25px;
+.navLeft {
+  display: flex;
+  justify-content: flex-start;
+  gap: 12px;
+}
+.navRight {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+/* voltar */
+
+.voltarBtn {
+  background: white;
+
+  padding: 12px 30px;
+
   border: none;
-  border-radius: 10px;
+  border-radius: 45px;
+
+  font-size: 20px;
   font-weight: bold;
+
   cursor: pointer;
+
   transition: 0.2s;
 }
-.actions button:hover {
+
+.voltarBtn:hover {
   transform: scale(1.05);
 }
-.modalHeader button {
-  background: transparent;
+
+/* avançar */
+
+.nextBtn {
+  background: white;
+
+  padding: 12px 30px;
+
   border: none;
+  border-radius: 45px;
+
+  font-size: 20px;
   font-weight: bold;
-  font-size: 16px;
+
   cursor: pointer;
+
+  animation: glowPulse 1.8s infinite;
+}
+
+/* enviar */
+
+.submitBtn {
+  background: #22c55e;
+
+  padding: 14px 34px;
+
+  border: none;
+  border-radius: 45px;
+
+  font-size: 22px;
+  font-weight: bold;
+
+  color: white;
+
+  cursor: pointer;
+
+  animation: glowPulse 1.8s infinite;
+}
+.finishContainer {
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+
+  gap: 20px;
+}
+
+.checkIcon {
+  width: 80px;
+  height: 80px;
+
+  border-radius: 50%;
+
+  background: #22c55e;
+
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 40px;
+  font-weight: bold;
+}
+.swipe-hint {
+  animation: swipeHint 1.4s ease-in-out infinite;
+}
+#Pamonha {
+  height: 340px;
 }
