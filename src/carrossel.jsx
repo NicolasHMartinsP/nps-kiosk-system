@@ -81,13 +81,14 @@ function Carrossel({ onClose }) {
           Voltar ao início
         </button>
 
-        {currentIndex === 0 && !Setaon && (
+        {currentIndex === 0 && (
           <>
-            <div className="absolute inset-0 flex items-center justify-between px-4 pointer-events-none z-20">
-              <span className="swipe-hint text-black p-9 text-8xl">‹‹</span>
-              <span className="swipe-hint text-black p-9 text-8xl">››</span>
-            </div>
-
+            {!Setaon && (
+              <div className="absolute inset-0 flex items-center justify-between px-4 pointer-events-none z-20">
+                <span className="swipe-hint text-black p-9 text-8xl">‹‹</span>
+                <span className="swipe-hint text-black p-9 text-8xl">››</span>
+              </div>
+            )}
             <div className="absolute bottom-6 w-full flex justify-center z-20">
               <div className="flex gap-x-16">
                 <div className="bg-white p-2 rounded-lg shadow-lg">
