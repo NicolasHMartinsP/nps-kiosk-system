@@ -17,12 +17,12 @@
     transform: translateX(0);
   }
 }
+
 @keyframes modalUp {
   from {
     transform: translateY(240px);
     opacity: 0;
   }
-
   to {
     transform: translateY(15px);
     opacity: 1;
@@ -33,11 +33,9 @@
   0% {
     transform: scale(1);
   }
-
   50% {
     transform: scale(1.08);
   }
-
   100% {
     transform: scale(1);
   }
@@ -57,8 +55,8 @@
     box-shadow: 0 0 0px rgba(254, 179, 43, 0.6);
   }
 }
-/* ---------------- FONTES ---------------- */
 
+/* ---------------- FONTES ---------------- */
 @font-face {
   font-family: "textgyreschola.regular";
   src: url("./assets/Fonts/texgyreschola-regular.otf");
@@ -75,7 +73,6 @@
 }
 
 /* ---------------- RESET ---------------- */
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -89,38 +86,86 @@ body {
 }
 
 /* ---------------- LOGO ---------------- */
-
 .logo-floating {
   position: fixed;
-  top: 30px;
-  left: 20px;
-
-  width: 60px;
-
+  top: 20px;
+  left: 14px;
+  width: 44px;
   cursor: pointer;
   z-index: 1000;
 }
 
-/* ---------------- HERO ---------------- */
+/* Tablet */
+@media (min-width: 768px) {
+  .logo-floating {
+    top: 26px;
+    left: 18px;
+    width: 54px;
+  }
+}
 
+/* Desktop */
+@media (min-width: 1024px) {
+  .logo-floating {
+    top: 30px;
+    left: 24px;
+    width: 64px;
+  }
+}
+
+/* ---------------- HERO ---------------- */
 .Hover {
   display: flex;
   flex-direction: column;
-
   justify-content: center;
   align-items: center;
-
   background: #000;
+  padding: 16px 20px;
+  gap: 14px;
+}
 
-  padding: 5px 50px;
-  gap: 20px;
+/* Tablet */
+@media (min-width: 768px) {
+  .Hover {
+    padding: 20px 50px;
+    gap: 18px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .Hover {
+    padding: 28px 80px;
+    gap: 22px;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
 }
 
 #titleSearch {
-  padding-top: 35px;
-  font-size: 28px;
+  padding-top: 40px;
+  font-size: 18px;
   text-align: center;
   color: white;
+  line-height: 1.45;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  #titleSearch {
+    padding-top: 35px;
+    font-size: 24px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  #titleSearch {
+    padding-top: 28px;
+    font-size: 30px;
+    max-width: 700px;
+  }
 }
 
 .highlight {
@@ -130,25 +175,53 @@ body {
 
 .linhabaixa {
   display: block;
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
 /* ---------------- SEÇÕES ---------------- */
-
 #modal {
   display: flex;
-  padding: 70px 70px;
+  padding: 40px 20px;
   background: #ffae00;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  #modal {
+    padding: 60px 50px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  #modal {
+    padding: 70px 100px;
+  }
 }
 
 .separador {
   background: black;
-  padding-bottom: 30px;
-  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-top: 14px;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .separador {
+    padding-bottom: 28px;
+    padding-top: 18px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .separador {
+    padding-bottom: 32px;
+    padding-top: 20px;
+  }
 }
 
 /* ---------------- BOTÕES ANIMADOS ---------------- */
-
 .pulseScale {
   animation: pulseScale 2s infinite;
 }
@@ -158,73 +231,87 @@ body {
 }
 
 /* ---------------- OVERLAY ---------------- */
-
 .ModalOverlay {
   position: fixed;
-
   top: 0;
   left: 0;
-
   width: 100%;
   height: 100%;
-
   display: flex;
   justify-content: center;
-  align-items: center;
-
+  align-items: flex-end;
   background: rgba(0, 0, 0, 0.65);
-
   z-index: 9999;
 }
 
-/* ---------------- CONTAINER ---------------- */
+/* Tablet e Desktop: centralizar */
+@media (min-width: 768px) {
+  .ModalOverlay {
+    align-items: center;
+  }
+}
 
+/* ---------------- CONTAINER MODAL ---------------- */
 .modalContainer {
-  width: 650px;
-  height: 600px;
+  width: 100%;
+  height: auto;
+  max-height: 92vh;
+  overflow-y: auto;
 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 
-  padding: 40px;
+  padding: 28px 20px;
 
-  border-radius: 25px;
+  border-radius: 24px 24px 0 0;
 
   background: #ffae00;
 
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
 
   animation: modalUp 0.35s ease;
 }
 
-/* ---------------- HEADER ---------------- */
+/* Tablet */
+@media (min-width: 768px) {
+  .modalContainer {
+    width: 650px;
+    height: 600px;
+    max-height: 90vh;
+    padding: 40px;
+    border-radius: 25px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  }
+}
 
+/* Desktop */
+@media (min-width: 1024px) {
+  .modalContainer {
+    width: 700px;
+    height: 620px;
+  }
+}
+
+/* ---------------- HEADER MODAL ---------------- */
 .modalHeader {
   position: relative;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   font-weight: bold;
 }
 
 /* X fechar */
-
 .closeBtn {
   position: absolute;
   left: 0;
   top: 0;
-
   background: transparent;
   border: none;
-
-  font-size: 26px;
+  font-size: 22px;
   font-weight: bold;
-
   cursor: pointer;
-
   transition: 0.2s;
 }
 
@@ -232,47 +319,99 @@ body {
   transform: scale(1.15);
 }
 
-/* ---------------- PERGUNTA ---------------- */
+/* Tablet+ */
+@media (min-width: 768px) {
+  .closeBtn {
+    font-size: 26px;
+  }
+}
 
+/* ---------------- PERGUNTA ---------------- */
 .modalQuestion {
   text-align: center;
-
-  font-size: 35px;
+  font-size: 22px;
   font-weight: 600;
-
-  margin: 30px 0px 50px 0px;
+  margin: 18px 0px 28px 0px;
 }
+
 .modalQuestion h1 {
-  max-width: 480px;
+  max-width: 100%;
   margin: 0 auto;
   line-height: 1.35;
 }
 
-/* ---------------- AVALIAÇÃO ---------------- */
+/* Tablet */
+@media (min-width: 768px) {
+  .modalQuestion {
+    font-size: 30px;
+    margin: 24px 0px 40px 0px;
+  }
 
+  .modalQuestion h1 {
+    max-width: 480px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .modalQuestion {
+    font-size: 35px;
+    margin: 30px 0px 50px 0px;
+  }
+}
+
+/* ---------------- AVALIAÇÃO ---------------- */
 .avaliacao {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 
-  gap: 15px;
+/* Tablet+ */
+@media (min-width: 768px) {
+  .avaliacao {
+    gap: 12px;
+    flex-wrap: nowrap;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .avaliacao {
+    gap: 15px;
+  }
 }
 
 /* botão base */
-
 .nota {
-  width: 70px;
-  height: 70px;
-
+  width: 54px;
+  height: 54px;
   border-radius: 10px;
   border: none;
-
-  font-size: 33px;
+  font-size: 24px;
   font-weight: bold;
-
   cursor: pointer;
-
   transition: all 0.2s ease;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .nota {
+    width: 64px;
+    height: 64px;
+    font-size: 30px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .nota {
+    width: 70px;
+    height: 70px;
+    font-size: 33px;
+  }
 }
 
 .nota:hover {
@@ -284,56 +423,58 @@ body {
 }
 
 /* cores */
-
 .nota-1 {
   background: linear-gradient(135deg, red, #ff7a7a);
 }
-
 .nota-2 {
   background: linear-gradient(135deg, rgb(247, 59, 59), #ff7aa2);
 }
-
 .nota-3 {
   background: linear-gradient(135deg, yellow, #ffe88c);
 }
-
 .nota-4 {
   background: linear-gradient(135deg, lightgreen, #4ade80);
 }
-
 .nota-5 {
   background: linear-gradient(135deg, #22c55e, green);
 }
 
 /* selecionado */
-
 .selecionado {
   border: 3px solid white;
-
   transform: scale(1.15);
-
   box-shadow: 0 0 18px rgba(255, 255, 255, 0.8);
 }
 
 /* ---------------- TEXTAREA ---------------- */
-
 .observacao textarea {
   width: 100%;
-  height: 150px;
-
-  padding: 12px;
-
-  border-radius: 20px;
-
+  height: 110px;
+  padding: 10px;
+  border-radius: 16px;
   border: 2px solid #ccc;
-
   background: #f9f9f9;
-
-  font-size: 20px;
-
+  font-size: 16px;
   resize: none;
-
   transition: 0.2s;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .observacao textarea {
+    height: 130px;
+    font-size: 18px;
+    border-radius: 20px;
+    padding: 12px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .observacao textarea {
+    height: 150px;
+    font-size: 20px;
+  }
 }
 
 .observacao textarea::placeholder {
@@ -342,49 +483,66 @@ body {
 
 .observacao textarea:focus {
   outline: none;
-
   border: 2px solid #4ade80;
-
   background: #ffffff;
 }
 
 /* ---------------- NAVEGAÇÃO ---------------- */
-
 .navigation {
   display: flex;
-
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  gap: 12px;
-  margin-top: 10px;
+  gap: 10px;
+  margin-top: 14px;
 }
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .navigation {
+    margin-top: 10px;
+    gap: 12px;
+  }
+}
+
 .navLeft {
   display: flex;
   justify-content: flex-start;
-  gap: 12px;
+  gap: 10px;
 }
+
 .navRight {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 10px;
 }
-/* voltar */
 
+/* voltar */
 .voltarBtn {
   background: white;
-
-  padding: 12px 30px;
-
+  padding: 10px 22px;
   border: none;
   border-radius: 45px;
-
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bold;
-
   cursor: pointer;
-
   transition: 0.2s;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .voltarBtn {
+    padding: 12px 28px;
+    font-size: 18px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .voltarBtn {
+    padding: 12px 30px;
+    font-size: 20px;
+  }
 }
 
 .voltarBtn:hover {
@@ -392,75 +550,133 @@ body {
 }
 
 /* avançar */
-
 .nextBtn {
   background: white;
-
-  padding: 12px 30px;
-
+  padding: 10px 22px;
   border: none;
   border-radius: 45px;
-
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bold;
-
   cursor: pointer;
-
   animation: glowPulse 1.8s infinite;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .nextBtn {
+    padding: 12px 28px;
+    font-size: 18px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .nextBtn {
+    padding: 12px 30px;
+    font-size: 20px;
+  }
 }
 
 /* enviar */
-
 .submitBtn {
   background: #22c55e;
-
-  padding: 14px 34px;
-
+  padding: 12px 26px;
   border: none;
   border-radius: 45px;
-
-  font-size: 22px;
+  font-size: 18px;
   font-weight: bold;
-
   color: white;
-
   cursor: pointer;
-
   animation: glowPulse 1.8s infinite;
 }
+
+/* Tablet */
+@media (min-width: 768px) {
+  .submitBtn {
+    padding: 13px 30px;
+    font-size: 20px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .submitBtn {
+    padding: 14px 34px;
+    font-size: 22px;
+  }
+}
+
 .finishContainer {
   height: 100%;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
   text-align: center;
-
   gap: 20px;
 }
 
 .checkIcon {
-  width: 80px;
-  height: 80px;
-
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
-
   background: #22c55e;
-
   color: white;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  font-size: 40px;
+  font-size: 36px;
   font-weight: bold;
 }
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .checkIcon {
+    width: 80px;
+    height: 80px;
+    font-size: 40px;
+  }
+}
+
 .swipe-hint {
   animation: swipeHint 1.4s ease-in-out infinite;
 }
+
+/* ---------------- CARROSSEL HERO ---------------- */
 #Pamonha {
-  height: 340px;
+  height: 220px;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  #Pamonha {
+    height: 340px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  #Pamonha {
+    height: 520px;
+    max-height: 60vh;
+  }
+}
+
+/* ---------------- SEÇÃO CLUBE ---------------- */
+#containerBotão {
+  max-width: 100%;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  #containerBotão {
+    max-width: 900px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  #containerBotão {
+    max-width: 1280px;
+  }
 }

@@ -1,17 +1,33 @@
 import { useState, useEffect } from "react";
 import "./App.css";
+
+/* ─────────── COMPONENTES ─────────── */
 import LogoFloating from "./LogoFloating";
-import img1 from "./assets/img/carrossel1.webp";
-import img2 from "./assets/img/carrossel2.webp";
-import img3 from "./assets/img/carrossel3.png";
-import imgClube from "./assets/img/STORY5.png";
-import img4 from "./assets/img/Pascoa.webp";
 import Carrossel from "./carrossel";
 import Modal from "./Modal";
 
-// `images` is a simple array of objects that drive the hero carousel.
-// Each object has an `id` (used for React's key), a `src` path, and
-// an `alt` text for accessibility.
+/* ─────────── IMAGENS HERO ─────────── */
+import img1 from "./assets/img/carrossel1.webp";
+import img2 from "./assets/img/carrossel2.webp";
+import img3 from "./assets/img/carrossel3.png";
+import img4 from "./assets/img/Pascoa.webp";
+
+/* ─────────── CLUBE ─────────── */
+import imgClube from "./assets/img/STORY5.png";
+
+/* ─────────── CAMPANHAS ─────────── */
+import cp1 from "./assets/img/Sabores/ACOMPANHAMENTOS1.jpg";
+import cp2 from "./assets/img/Sabores/ACOMPANHAMENTOS2.jpg";
+import cp3 from "./assets/img/Sabores/AÇAÍSESORVETES.png";
+import cp4 from "./assets/img/Sabores/SABORESAÇAÍ.png";
+
+import cp21 from "./assets/img/Pascoa/pascoa1.mp4";
+import cp22 from "./assets/img/Pascoa/Pascoa2.mp4";
+
+import cp31 from "./assets/img/Shake/ShakeP.png";
+import cp32 from "./assets/img/Shake/shakeproteico 1.mp4";
+
+/* ─────────── HERO CAROUSEL ─────────── */
 const images = [
   { id: "img1", src: img1, alt: "Batatinha" },
   { id: "img2", src: img2, alt: "Cenourinha" },
@@ -19,80 +35,118 @@ const images = [
   { id: "img4", src: img4, alt: "Linguicinha" },
 ];
 
+/* ─────────── CAMPANHAS ─────────── */
+const campaign1 = [
+  { id: "c1-1", src: cp1, alt: "Campanha 1" },
+  { id: "c1-2", src: cp2, alt: "Campanha 1" },
+  { id: "c1-3", src: cp3, alt: "Campanha 1" },
+  { id: "c1-4", src: cp4, alt: "Campanha 1" },
+];
+
+const campaign2 = [
+  { id: "c2-1", src: cp21, alt: "Campanha 2" },
+  { id: "c2-2", src: cp22, alt: "Campanha 2" },
+];
+
+const campaign3 = [
+  { id: "c3-1", src: cp31, alt: "Campanha 3" },
+  { id: "c3-2", src: cp32, alt: "Campanha 3" },
+];
+
+/* ─────────── MAPA DE CAMPANHAS ─────────── */
+const campaignMap = {
+  img1: campaign1,
+  img2: campaign2,
+  img3: campaign3,
+};
+
+/* ─────────── COMPONENTE PRINCIPAL ─────────── */
 function App() {
-  // ------------------------------------------------------------------
-  // 1. State declarations
-  // `useState` is a React hook that lets us add state to functional components.
-  // We define three pieces of state:
-  // - ModalOpen: boolean flag controlling the feedback modal visibility.
-  // - currentIndex: index of the currently visible slide in the hero carousel.
-  // - ClubOpen: boolean flag for showing the club information carousel.
-  // These are all local to App and drive conditional rendering below.
+  /* ─────────── QUERY PARAM ─────────── */
   const cidade =
     new URLSearchParams(window.location.search).get("cidade") || "desconhecida";
-  const [ModalOpen, SetModalOpen] = useState(false);
+
+  /* ─────────── STATES ─────────── */
+
+  // HERO
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // CAMPANHA
+  const [campaignInuse, SetCampaignInuse] = useState(null);
+  const [openCampaign, SetopenCampaign] = useState(false);
+  const [Campaign, SetCampaign] = useState(0);
+
+  // MODAIS
+  const [ModalOpen, SetModalOpen] = useState(false);
   const [ClubOpen, SetClubOpen] = useState(false);
+
+  // TOUCH
   const [TouchStart, SetTouchStart] = useState(null);
   const [TouchEnd, SetTouchEnd] = useState(null);
+
   const minSwipeDistance = 50;
+
+  /* ─────────── TOUCH HANDLERS ─────────── */
   const onTouchStart = (e) => {
     SetTouchEnd(null);
     SetTouchStart(e.targetTouches[0].clientX);
   };
-  const onTouchEnd = () => {
-    if (!TouchStart || !TouchEnd) return;
-    const distance = TouchStart - TouchEnd;
-    if (distance > minSwipeDistance) {
-      setSetaOn(true);
-      nextSlide();
-    }
-    if (distance < -minSwipeDistance) {
-      setSetaOn(true);
-      prevSlide();
-    }
-  };
-  const [Setaon, setSetaOn] = useState(false);
+
   const onTouchMove = (e) => {
     SetTouchEnd(e.targetTouches[0].clientX);
   };
-  // ------------------------------------------------------------------
-  // 2. Helper functions
-  // These are simple arrow functions that change the carousel index.
-  // They use the functional form of `setState` to ensure the update is
-  // based on the prior value.
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-  };
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+
+  const onTouchEnd = () => {
+    if (!TouchStart || !TouchEnd) return;
+
+    const distance = TouchStart - TouchEnd;
+
+    // SWIPE DO MODAL
+    if (openCampaign && campaignInuse) {
+      if (distance > minSwipeDistance) {
+        SetCampaign((prev) =>
+          prev === campaignInuse.length - 1 ? 0 : prev + 1
+        );
+      }
+
+      if (distance < -minSwipeDistance) {
+        SetCampaign((prev) =>
+          prev === 0 ? campaignInuse.length - 1 : prev - 1
+        );
+      }
+    }
+    // SWIPE DO HERO
+    else {
+      if (distance > minSwipeDistance) nextSlide();
+      if (distance < -minSwipeDistance) prevSlide();
+    }
   };
 
-  // ------------------------------------------------------------------
-  // 3. Side effects
-  // `useEffect` without dependencies runs once after the initial render.
-  // Here we create an interval that advances the carousel automatically
-  // every 3 seconds. The returned cleanup function clears the interval when
-  // the component unmounts or before the effect re-runs.
+  /* ─────────── HERO NAV ─────────── */
+  const nextSlide = () => {
+    setCurrentIndex((prev) =>
+      prev === images.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const prevSlide = () => {
+    setCurrentIndex((prev) =>
+      prev === 0 ? images.length - 1 : prev - 1
+    );
+  };
+
+  /* ─────────── AUTO PLAY HERO ─────────── */
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-    }, 5000);
+    const interval = setInterval(nextSlide, 5000);
     return () => clearInterval(interval);
   }, []);
 
-  // ------------------------------------------------------------------
-  // 4. Render logic (JSX)
-  // The component returns a fragment containing:
-  // - a header section with a floating logo, title, and evaluation button
-  // - a manual carousel controlled by `currentIndex`
-  // - a club promotion section with an image and a button
-  // - conditional rendering of <Modal> and <Carrossel> based on state
-  // Tailwind CSS classes are used extensively for styling and layout.
   return (
     <>
-      <div className="text-lg font-semibold px-8 py-4 Hover">
-        <LogoFloating></LogoFloating>
+      {/* ── HERO ───────────────── */}
+      <div className="text-lg font-semibold px-4 py-3 md:px-8 md:py-4 lg:px-16 lg:py-6 Hover">
+        <LogoFloating />
+
         <h1 id="titleSearch">
           Nos <span className="highlight">ajude</span> a fazer o nosso{" "}
           <span className="highlight">melhor</span>
@@ -100,62 +154,203 @@ function App() {
             deixe a <span className="highlight">sua</span> avaliação!
           </span>
         </h1>
+
+        {/* ── BOTÃO AVALIAR AGORA ── */}
         <button
-          className="mt-8 px-8 py-4 text-2xl font-bold bg-[#feb32b] rounded-xl shadow-lg transition-all duration-300 hover:scale-110 pulseScale glowButton"
+          className="glowButton mt-2"
+          style={{
+            padding: "14px 40px",
+            fontSize: "1.4rem",
+            fontWeight: "800",
+            backgroundColor: "#feb32b",
+            color: "#1a1a1a",
+            border: "none",
+            borderRadius: "1rem",
+            cursor: "pointer",
+          }}
           onClick={() => SetModalOpen(true)}
         >
           Avaliar agora!
         </button>
       </div>
+
+      {/* ── CARROSSEL HERO ───────────────── */}
       <div className="separador">
+        <div className="carrosselWrapper">
+          <div
+            className="relative overflow-hidden"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
+            {/* TRACK */}
+            <div
+              className="flex transition-transform duration-500"
+              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+            >
+              {images.map((image) => (
+                <img
+                  key={image.id}
+                  src={image.src}
+                  alt={image.alt}
+                  className="w-full flex-shrink-0 cursor-pointer object-contain"
+                  onClick={() => {
+                    const campanha = campaignMap[image.id];
+                    if (!campanha) return;
+
+                    SetCampaignInuse(campanha);
+                    SetopenCampaign(true);
+                    SetCampaign(0);
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* SETAS */}
+            <button
+              onClick={prevSlide}
+              className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-10 bg-[#feb32b] px-3 py-2 rounded-full shadow"
+            >
+              ←
+            </button>
+
+            <button
+              onClick={nextSlide}
+              className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-10 bg-[#feb32b] px-3 py-2 rounded-full shadow"
+            >
+              →
+            </button>
+
+            {/* DOTS */}
+            <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2 z-10">
+              {images.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentIndex(i)}
+                  className={`w-2 h-2 rounded-full ${
+                    i === currentIndex ? "bg-[#feb32b]" : "bg-white/60"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── MODAL CAMPANHA ───────────────── */}
+      {openCampaign && campaignInuse && (
         <div
-          id="Pamonha"
-          className="relative overflow-hidden w-full"
+          className="fixed inset-0 bg-black z-50 flex items-center justify-center"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
         >
-          <div
-            className="flex transition-transform duration-500 ease-in-out h-full"
-            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+          {/* FECHAR */}
+          <button
+            onClick={() => {
+              SetopenCampaign(false);
+              SetCampaign(0);
+            }}
+            className="absolute top-4 right-4 text-white text-2xl z-50"
           >
-            {images.map((image) => (
-              <img
-                key={image.id}
-                src={image.src}
-                alt={image.alt}
-                className="h-full w-full flex-shrink-0 cursor-pointer block"
-              />
-            ))}
+            ✕
+          </button>
+
+          {/* CARROSSEL */}
+          <div className="w-full h-full overflow-hidden">
+            <div
+              className="flex h-full transition-transform duration-500"
+              style={{ transform: `translateX(-${Campaign * 100}%)` }}
+            >
+              {campaignInuse.map((item) => (
+                <div key={item.id} className="w-full h-full flex-shrink-0">
+                  {item.src.endsWith(".mp4") ? (
+                    <video
+                      src={item.src}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      preload="auto"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <img
+                      src={item.src}
+                      className="w-full h-full object-contain"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* SETAS */}
+            <button
+              onClick={() =>
+                SetCampaign((prev) =>
+                  prev === 0 ? campaignInuse.length - 1 : prev - 1
+                )
+              }
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-[#feb32b] px-3 py-2 rounded-full"
+            >
+              ←
+            </button>
+
+            <button
+              onClick={() =>
+                SetCampaign((prev) =>
+                  prev === campaignInuse.length - 1 ? 0 : prev + 1
+                )
+              }
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-[#feb32b] px-3 py-2 rounded-full"
+            >
+              →
+            </button>
+
+            {/* DOTS */}
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+              {campaignInuse.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => SetCampaign(i)}
+                  className={`w-2 h-2 rounded-full ${
+                    i === Campaign ? "bg-[#feb32b]" : "bg-white/60"
+                  }`}
+                />
+              ))}
+            </div>
           </div>
-          <button
-            onClick={prevSlide}
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-[#feb32b] hover:bg-white px-3 py-2 rounded-full shadow"
-          >
-            ←
-          </button>
-          <button
-            onClick={nextSlide}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-[#feb32b] hover:bg-white px-3 py-2 rounded-full shadow"
-          >
-            →
-          </button>
         </div>
-      </div>
+      )}
+
+      {/* ── CLUBE ───────────────── */}
       <section className="w-full min-h-screen flex flex-col items-center justify-center relative">
-        <div id="containerBotão" className="relative w-full max-w-5xl">
-          <img src={imgClube} alt="Clube The Best" className="w-full h-auto" />
-          <button
-            onClick={() => SetClubOpen(true)}
-            className="absolute mx-auto left-0 right-0 w-fit bottom-[5%] text-black bg-[#feb32b] px-8 py-4 font-bold rounded-xl transition-all duration-300 hover:scale-110 hover:-translate-y-1 shadow-lg pulseScale glowButton"
-          >
-            Clique aqui e saiba mais!
-          </button>
-        </div>
+        <img src={imgClube} alt="Clube" className="w-full object-cover" />
+
+        {/* ── BOTÃO CLUBE ── */}
+        <button
+          onClick={() => SetClubOpen(true)}
+          className="glowButton absolute bottom-10"
+          style={{
+            padding: "14px 36px",
+            fontSize: "1.2rem",
+            fontWeight: "800",
+            backgroundColor: "#feb32b",
+            color: "#1a1a1a",
+            border: "none",
+            borderRadius: "1rem",
+            cursor: "pointer",
+          }}
+        >
+          Clique aqui e saiba mais!
+        </button>
       </section>
+
+      {/* ── MODAIS ───────────────── */}
       {ModalOpen && (
         <Modal onClose={() => SetModalOpen(false)} cidade={cidade} />
       )}
+
       {ClubOpen && <Carrossel onClose={() => SetClubOpen(false)} />}
     </>
   );
