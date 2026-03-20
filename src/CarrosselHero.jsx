@@ -1,21 +1,4 @@
-/* ═══════════════════════════════════════════════════════════
-   CarrosselHero.jsx
-   Carrossel de imagens promocionais (faixa preta abaixo do hero).
-   Recebe tudo via props — não tem estado próprio.
-
-   Props:
-     images        → array de slides { id, src, alt }
-     currentIndex  → índice do slide ativo
-     onNext        → fn para avançar
-     onPrev        → fn para voltar
-     onDotClick(i) → fn para ir direto a um slide
-     onTouchStart  → handler de toque
-     onTouchMove   → handler de toque
-     onTouchEnd    → handler de toque
-
-     currentHasCampaign → boolean: slide ativo tem campanha?
-     onSaibaMais        → fn abre o modal de campanha
-   ═══════════════════════════════════════════════════════════ */
+/* CarrosselHero.jsx — Carrossel do hero + faixa "Saiba mais". Documentação: README.md → Componentes → CarrosselHero.jsx */
 
 export default function CarrosselHero({
   images,
@@ -38,8 +21,7 @@ export default function CarrosselHero({
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
         >
-          {/* Track: todos os slides lado a lado */}
-          {/* translateX move qual slide está visível */}
+          {/* Track: translateX move qual slide está visível */}
           <div
             className="flex transition-transform duration-500"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -54,33 +36,24 @@ export default function CarrosselHero({
             ))}
           </div>
 
-          {/* Seta esquerda */}
-          <button onClick={onPrev} className="arrowBtn arrowBtn--left">
-            ‹
-          </button>
+          {/* Setas — reutilizam .arrowBtn do App.css */}
+          <button onClick={onPrev} className="arrowBtn arrowBtn--left">‹</button>
+          <button onClick={onNext} className="arrowBtn arrowBtn--right">›</button>
 
-          {/* Seta direita */}
-          <button onClick={onNext} className="arrowBtn arrowBtn--right">
-            ›
-          </button>
-
-          {/* Dots — amarelo = ativo, branco semitransparente = inativo */}
+          {/* Dots — laranja = ativo, branco semitransparente = inativo */}
           <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2 z-10">
             {images.map((_, i) => (
               <button
                 key={i}
                 onClick={() => onDotClick(i)}
-                className={`w-2 h-2 rounded-full ${
-                  i === currentIndex ? "bg-[#feb32b]" : "bg-white/60"
-                }`}
+                className={`w-2 h-2 rounded-full ${i === currentIndex ? "bg-[#feb32b]" : "bg-white/60"}`}
               />
             ))}
           </div>
         </div>
       </div>
 
-      {/* Faixa abaixo do carrossel — sempre presente para manter padding */}
-      {/* O botão só aparece quando o slide atual tem campanha vinculada */}
+      {/* Faixa abaixo do carrossel — botão só aparece se o slide tiver campanha vinculada */}
       <div className="saibaMaisFaixa">
         {currentHasCampaign && (
           <button onClick={onSaibaMais} className="glowButton saibaMaisBtn">

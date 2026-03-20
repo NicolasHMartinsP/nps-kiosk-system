@@ -1,21 +1,4 @@
-/* ═══════════════════════════════════════════════════════════
-   CampanhaModal.jsx
-   Modal fullscreen que exibe as mídias de uma campanha.
-   Suporta imagens e vídeos (.mp4), setas, dots e swipe.
-   Só renderiza quando openCampaign === true.
-
-   Props:
-     openCampaign      → boolean: exibe ou esconde o modal
-     campaignInuse     → array de mídias { id, src, alt }
-     campaignIndex     → índice do slide ativo na campanha
-     onClose           → fn fecha o modal
-     onNext            → fn avança slide
-     onPrev            → fn volta slide
-     onDotClick(i)     → fn vai direto a um slide
-     onTouchStart      → handler de swipe
-     onTouchMove       → handler de swipe
-     onTouchEnd        → handler de swipe
-   ═══════════════════════════════════════════════════════════ */
+/* CampanhaModal.jsx — Modal fullscreen de campanha (imagens e vídeos). Documentação: README.md → Componentes → CampanhaModal.jsx */
 
 export default function CampanhaModal({
   openCampaign,
@@ -30,7 +13,6 @@ export default function CampanhaModal({
   onTouchEnd,
 }) {
 
-  // Não renderiza nada se o modal estiver fechado ou sem campanha
   if (!openCampaign || !campaignInuse) return null;
 
   return (
@@ -40,23 +22,19 @@ export default function CampanhaModal({
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
     >
-
-      {/* Botão fechar — canto superior direito */}
-      <button onClick={onClose} className="campaignCloseBtn">
-        ✕
-      </button>
+      {/* Botão fechar */}
+      <button onClick={onClose} className="campaignCloseBtn">✕</button>
 
       <div className="w-full h-full overflow-hidden">
 
-        {/* Track da campanha */}
+        {/* Track: translateX move qual slide está visível */}
         <div
           className="flex h-full transition-transform duration-500"
           style={{ transform: `translateX(-${campaignIndex * 100}%)` }}
         >
           {campaignInuse.map((item) => (
             <div key={item.id} className="w-full h-full flex-shrink-0">
-
-              {/* Detecta vídeo pela extensão — .mp4 → <video>, resto → <img> */}
+              {/* Detecta tipo pela extensão: .mp4 → vídeo, resto → imagem */}
               {item.src.endsWith(".mp4") ? (
                 <video
                   src={item.src}
@@ -64,26 +42,15 @@ export default function CampanhaModal({
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <img
-                  src={item.src}
-                  alt={item.alt}
-                  className="w-full h-full object-contain"
-                />
+                <img src={item.src} alt={item.alt} className="w-full h-full object-contain" />
               )}
-
             </div>
           ))}
         </div>
 
-        {/* Seta esquerda */}
-        <button onClick={onPrev} className="arrowBtn arrowBtn--left">
-          ‹
-        </button>
-
-        {/* Seta direita */}
-        <button onClick={onNext} className="arrowBtn arrowBtn--right">
-          ›
-        </button>
+        {/* Setas — reutilizam .arrowBtn do App.css */}
+        <button onClick={onPrev} className="arrowBtn arrowBtn--left">‹</button>
+        <button onClick={onNext} className="arrowBtn arrowBtn--right">›</button>
 
         {/* Dots */}
         <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
@@ -91,9 +58,7 @@ export default function CampanhaModal({
             <button
               key={i}
               onClick={() => onDotClick(i)}
-              className={`w-2 h-2 rounded-full ${
-                i === campaignIndex ? "bg-[#feb32b]" : "bg-white/60"
-              }`}
+              className={`w-2 h-2 rounded-full ${i === campaignIndex ? "bg-[#feb32b]" : "bg-white/60"}`}
             />
           ))}
         </div>
