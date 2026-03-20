@@ -1,75 +1,154 @@
 /* ═══════════════════════════════════════════════════════════
    App.css — The Best Açaí
    ═══════════════════════════════════════════════════════════
-   Índice:
-     1.  Tailwind
-     2.  Animações
-     3.  Fontes
-     4.  Reset
-     5.  Logo flutuante
-     6.  Hero
-     7.  Carrossel hero
-     8.  Setas (.arrowBtn)
-     9.  Faixa + botão saiba mais
-     10. Botões animados
-     11. Botões específicos (avaliar, clube)
-     12. Modal campanha — fechar
-     13. Modal avaliação — overlay e container
-     14. Modal avaliação — conteúdo
-     15. Legado
+
+   COMO LER ESTE ARQUIVO:
+   Cada seção tem um cabeçalho numerado. Basta procurar o
+   número ou nome da seção para ir direto ao que precisa.
+
+   REGRA DE OURO DE PERFORMANCE (vale para todo o arquivo):
+   Anime APENAS "transform" e "opacity". Essas duas
+   propriedades rodam diretamente na GPU sem recalcular
+   o layout da página. Qualquer outra propriedade animada
+   (width, height, margin, top, left, box-shadow) força o
+   browser a redesenhar a tela inteira a cada frame —
+   é isso que causa travamento em tablets.
+
+   ÍNDICE:
+     1.  Tailwind ................. reset + utilitários base
+     2.  Animações ................ @keyframes reutilizáveis
+     3.  Fontes ................... fontes customizadas OTF
+     4.  Reset .................... zeragem de margin/padding
+     5.  Logo flutuante ........... logo fixo canto sup. esq.
+     6.  Hero ..................... seção de entrada da página
+     7.  Carrossel hero ........... wrapper das imagens
+     8.  Setas de navegação ....... prev/next do carrossel
+     9.  Faixa + botão saiba mais . faixa preta sob carrossel
+     10. Botões animados .......... classes de animação pura
+     11. Botões específicos ....... avaliar e clube
+     12. Modal campanha ........... botão fechar
+     13. Modal avaliação .......... overlay e container
+     14. Modal avaliação .......... conteúdo interno
+     15. Legado ................... classes antigas mantidas
    ═══════════════════════════════════════════════════════════ */
 
 
-/* ── 1. TAILWIND ──────────────────────────────────────────── */
+/* ── 1. TAILWIND ──────────────────────────────────────────────
+   Essas três linhas ativam o Tailwind CSS no projeto.
+
+   @tailwind base
+     → Injeta um reset CSS normalizado (parecido com
+       normalize.css). Garante que botões, inputs e títulos
+       apareçam iguais em todos os browsers.
+
+   @tailwind components
+     → Reservado para classes de componente criadas com
+       @layer components { }. Não usamos isso aqui ainda,
+       mas a linha precisa estar presente.
+
+   @tailwind utilities
+     → Injeta todas as classes utilitárias do Tailwind:
+       flex, w-full, text-center, min-h-screen, etc.
+       É o coração do Tailwind — sem essa linha, nenhuma
+       classe funciona no JSX.
+
+   IMPORTANTE: essas diretivas precisam vir ANTES de qualquer
+   regra CSS sua, senão o Tailwind pode sobrescrever seus
+   estilos sem querer.
+   ─────────────────────────────────────────────────────────── */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 
-/* ── 2. ANIMAÇÕES ─────────────────────────────────────────── */
+/* ── 2. ANIMAÇÕES ─────────────────────────────────────────────
+   @keyframes define o "roteiro" de uma animação CSS.
+   Você cria o roteiro aqui e aplica ele em qualquer elemento
+   com: animation: nomeDaAnimacao duração timing iterações;
 
-/*
-  PERFORMANCE: todas as animações usam apenas transform e opacity.
-  Essas propriedades rodam na GPU e não forçam recálculo de layout,
-  o que elimina o travamento em tablets e dispositivos mais lentos.
-*/
+   Todas as animações abaixo usam APENAS transform e opacity
+   — isso é intencional. Ver nota de performance no topo.
+   ─────────────────────────────────────────────────────────── */
 
+/* swipeHint
+   Dica visual de que o carrossel é arrastável.
+   Um elemento desliza levemente para a direita e some,
+   sugerindo ao usuário que pode fazer swipe.
+   Usado em: carrossel.jsx com a classe .swipe-hint */
 @keyframes swipeHint {
-  0%   { opacity: 0; transform: translateX(0); }
-  50%  { opacity: 1; transform: translateX(8px); }
-  100% { opacity: 0; transform: translateX(0); }
+  0%   { opacity: 0; transform: translateX(0);   } /* invisível, posição original  */
+  50%  { opacity: 1; transform: translateX(8px); } /* visível, 8px para a direita  */
+  100% { opacity: 0; transform: translateX(0);   } /* invisível, volta ao início   */
 }
 
+/* modalUp
+   Entrada do modal de avaliação — sobe de baixo para cima.
+   translateY(240px) = começa 240px abaixo da posição final.
+   translateY(15px)  = para 15px acima do centro (efeito flutuante).
+   Usado em: .modalContainer */
 @keyframes modalUp {
-  from { transform: translateY(240px); opacity: 0; }
-  to   { transform: translateY(15px);  opacity: 1; }
+  from { transform: translateY(240px); opacity: 0; } /* embaixo, invisível   */
+  to   { transform: translateY(15px);  opacity: 1; } /* posição final, visível */
 }
 
+/* pulseScale
+   Pulsação sutil — o elemento cresce levemente e volta.
+   scale(1.08) = 8% maior no pico.
+   Usado em: .pulseScale (classe utilitária) */
 @keyframes pulseScale {
-  0%, 100% { transform: scale(1); }
-  50%       { transform: scale(1.08); }
+  0%, 100% { transform: scale(1);    } /* tamanho normal */
+  50%       { transform: scale(1.08); } /* 8% maior       */
 }
 
-/* Brilho laranja pulsante — botões de ação principais */
-/* PERFORMANCE: removido box-shadow animado (causa repaint).
-   Mantido apenas transform — mesma sensação visual, muito mais leve. */
+/* glowPulse
+   Pulsação dos botões principais de ação (Avaliar, Avançar).
+   Combina leve crescimento (scale) com variação de opacidade
+   para simular o "brilho" sem usar box-shadow animado.
+
+   POR QUE SEM box-shadow?
+   box-shadow animado causa "repaint" a cada frame — o browser
+   recalcula e redesenha a sombra do zero. Em tablets isso
+   trava visivelmente. Opacity é calculada na GPU: zero custo.
+
+   Usado em: .glowButton, .nextBtn, .submitBtn */
 @keyframes glowPulse {
-  0%, 100% { transform: scale(1);    opacity: 1; }
-  50%       { transform: scale(1.07); opacity: 0.92; }
+  0%, 100% { transform: scale(1);    opacity: 1;    } /* estado base      */
+  50%       { transform: scale(1.07); opacity: 0.92; } /* pico da pulsação */
 }
 
 
-/* ── 3. FONTES ────────────────────────────────────────────── */
+/* ── 3. FONTES ────────────────────────────────────────────────
+   @font-face registra fontes locais para uso no CSS.
+   Os arquivos .otf ficam em ./assets/Fonts/.
+
+   font-display: swap
+     → Comportamento de carregamento da fonte:
+       "swap" = usa a fonte do sistema enquanto a fonte
+       customizada carrega, depois troca.
+       Isso evita que o texto fique invisível durante o
+       carregamento (FOIT — Flash of Invisible Text).
+       Sem isso, o browser pode bloquear a renderização
+       da página esperando a fonte baixar.
+
+   As fontes declaradas aqui ficam disponíveis para uso
+   em qualquer propriedade font-family do CSS.
+   ─────────────────────────────────────────────────────────── */
+
+/* Fonte serifada para textos corridos */
 @font-face {
   font-family: "textgyreschola.regular";
   src: url("./assets/Fonts/texgyreschola-regular.otf");
-  font-display: swap; /* PERFORMANCE: não bloqueia renderização enquanto carrega */
+  font-display: swap;
 }
+
+/* Versão bold da mesma serifada */
 @font-face {
   font-family: "textgyreschola.bold";
   src: url("./assets/Fonts/texgyreschola-bold.otf");
   font-display: swap;
 }
+
+/* Fonte display bold para títulos de impacto */
 @font-face {
   font-family: "novabold";
   src: url("./assets/Fonts/novabold.otf");
@@ -77,28 +156,74 @@
 }
 
 
-/* ── 4. RESET ─────────────────────────────────────────────── */
+/* ── 4. RESET ─────────────────────────────────────────────────
+   Browsers aplicam margens e paddings padrão diferentes
+   em cada elemento (h1, p, ul, body...). Sem reset, o layout
+   varia entre Chrome, Firefox e Safari.
+
+   box-sizing: border-box
+     → Padding e border ficam DENTRO da largura declarada.
+       Ex: um div de width:100px com padding:10px continua
+       tendo 100px no total — o padding "comprime" o conteúdo
+       internamente. Sem isso, o div teria 120px (100 + 10+10).
+       Essencial para layouts responsivos não "vazar".
+
+   margin: 0 / padding: 0
+     → Remove espaços padrão do browser. O * aplica em
+       todos os elementos da página de uma vez.
+   ─────────────────────────────────────────────────────────── */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: #fff; margin: 0; padding: 0; }
 
 
-/* ── 5. LOGO FLUTUANTE ────────────────────────────────────── */
+/* ── 5. LOGO FLUTUANTE ────────────────────────────────────────
+   O logo fica fixo no canto superior esquerdo e não some
+   durante o scroll — por isso "flutuante".
+
+   position: fixed
+     → Remove o elemento do fluxo normal da página.
+       Fica preso na mesma posição da tela independente
+       do scroll. top/left definem o canto exato.
+
+   z-index: 1000
+     → Garante que o logo fique na frente de tudo.
+       O modal de avaliação usa z-index: 9999, então
+       quando o modal abre o logo fica atrás — correto.
+
+   will-change: transform
+     → Avisa o browser com antecedência que esse elemento
+       pode ser animado. O browser cria uma camada GPU
+       separada pra ele, evitando repaint futuro.
+
+   Breakpoints:
+     768px  → tablet: logo um pouco maior e mais afastado
+     1024px → desktop: logo na posição e tamanho definitivos
+   ─────────────────────────────────────────────────────────── */
 .logo-floating {
   position: fixed;
   top: 20px; left: 14px;
   width: 44px;
   cursor: pointer;
   z-index: 1000;
-  /* PERFORMANCE: avisa a GPU que esse elemento vai se mover */
   will-change: transform;
 }
 @media (min-width: 768px)  { .logo-floating { top: 26px; left: 18px; width: 54px; } }
 @media (min-width: 1024px) { .logo-floating { top: 30px; left: 24px; width: 64px; } }
 
 
-/* ── 6. HERO ──────────────────────────────────────────────── */
+/* ── 6. HERO ──────────────────────────────────────────────────
+   Seção de entrada da página — fundo preto com tagline,
+   título e botão "Avaliar agora!".
+   ─────────────────────────────────────────────────────────── */
 
-/* Container — fundo preto, coluna centralizada */
+/* .Hover — container principal do hero (nome do código original)
+   flex-direction: column → mobile: elementos empilhados.
+   gap: 16px → espaço uniforme entre filhos sem margin.
+
+   Breakpoint 1024px (desktop):
+     flex-direction: row → elementos lado a lado.
+     flex-wrap: wrap → quebra para a próxima linha se não couber,
+     sem transbordar a tela. */
 .Hover {
   display: flex;
   flex-direction: column;
@@ -111,7 +236,7 @@ body { background: #fff; margin: 0; padding: 0; }
 @media (min-width: 768px)  { .Hover { padding: 20px 50px 28px; gap: 20px; } }
 @media (min-width: 1024px) {
   .Hover {
-    flex-direction: row;
+    flex-direction: row;  /* lado a lado no desktop */
     justify-content: center;
     flex-wrap: wrap;
     padding: 28px 80px;
@@ -119,7 +244,11 @@ body { background: #fff; margin: 0; padding: 0; }
   }
 }
 
-/* Bloco de texto: tagline + título */
+/* .heroText — bloco que agrupa tagline e título
+   padding-top: 40px → cria espaço para o logo fixo não
+   sobrepor o texto no mobile (logo: top 20px + height 44px).
+   No desktop o layout vira row, padding-top some e o
+   texto alinha à esquerda. */
 .heroText {
   display: flex;
   flex-direction: column;
@@ -132,18 +261,25 @@ body { background: #fff; margin: 0; padding: 0; }
   .heroText { padding-top: 0; align-items: flex-start; text-align: left; }
 }
 
-/* "nos ajude a fazer o nosso melhor" */
+/* .heroTagline — "nos ajude a fazer o nosso melhor"
+   Texto pequeno acima do título principal.
+   letter-spacing: 0.18em → espaçamento largo entre letras,
+   estilo "label" que complementa o título grande visualmente.
+   color com opacity 0.7 → laranja mais suave que o .highlight */
 .heroTagline {
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(254, 179, 43, 0.7);
+  color: rgba(254, 179, 43, 0.7); /* laranja da marca, 70% opaco */
   font-family: system-ui, -apple-system, sans-serif;
 }
 @media (min-width: 768px) { .heroTagline { font-size: 0.78rem; } }
 
-/* "Deixe a sua avaliação!" */
+/* .heroTitle — "Deixe a sua avaliação!"
+   Título principal, branco sobre fundo preto.
+   font-weight: 800 → extra-bold para impacto visual.
+   line-height: 1.2 → linhas próximas para títulos grandes. */
 .heroTitle {
   font-size: 2rem;
   font-weight: 800;
@@ -154,22 +290,33 @@ body { background: #fff; margin: 0; padding: 0; }
 @media (min-width: 768px)  { .heroTitle { font-size: 2.6rem; } }
 @media (min-width: 1024px) { .heroTitle { font-size: 3rem; } }
 
-/* Destaque laranja dentro do título */
+/* .highlight — <span> dentro do heroTitle
+   Aplica a cor laranja da marca na palavra "avaliação!".
+   Usado como <span className="highlight"> no JSX. */
 .highlight { color: #feb32b; }
 
-/* Mantido por compatibilidade */
+/* .linhabaixa — mantido por compatibilidade com código antigo.
+   Não remover: pode quebrar algo que ainda o referencia. */
 .linhabaixa { display: block; margin-top: 10px; }
 
 
-/* ── 7. CARROSSEL HERO ────────────────────────────────────── */
+/* ── 7. CARROSSEL HERO ────────────────────────────────────────
+   Wrappers que envolvem o componente CarrosselHero.jsx.
+   A lógica de slides, dots e swipe fica no componente —
+   aqui só o posicionamento visual.
+   ─────────────────────────────────────────────────────────── */
 
-/* Fundo preto que envolve o carrossel e a faixa saiba mais */
+/* .separador — faixa preta que conecta o hero ao carrossel.
+   padding-top: 4px evita que o carrossel encoste
+   direto na borda inferior do .Hover. */
 .separador {
   background: #000;
   padding-top: 4px;
 }
 
-/* Centraliza o carrossel horizontalmente */
+/* .carrosselWrapper — centraliza o carrossel horizontalmente.
+   O carrossel tem largura própria definida internamente,
+   então o wrapper só precisa de flex + justify-content. */
 .carrosselWrapper {
   width: 100%;
   display: flex;
@@ -177,18 +324,40 @@ body { background: #fff; margin: 0; padding: 0; }
 }
 
 
-/* ── 8. SETAS DE NAVEGAÇÃO ────────────────────────────────── */
+/* ── 8. SETAS DE NAVEGAÇÃO ────────────────────────────────────
+   Botões prev/next do carrossel e do modal de campanha.
+   Círculo semitransparente com seta no centro.
+   Ao hover: fundo vira laranja — cor da marca.
+
+   position: absolute
+     → Fica sobreposto ao carrossel sem empurrar o conteúdo.
+       O pai precisa ter position: relative (definido no JSX).
+
+   top: 50% + transform: translateY(-50%)
+     → Centraliza verticalmente de forma perfeita,
+       independente da altura do carrossel.
+
+   z-index: 10
+     → Fica na frente das imagens do carrossel.
+
+   will-change: transform
+     → Prepara camada GPU pois o hover aplica transform.
+
+   .arrowBtn--left / --right
+     → Modificadores BEM que posicionam cada seta.
+       Usados como className="arrowBtn arrowBtn--left" no JSX.
+   ─────────────────────────────────────────────────────────── */
 .arrowBtn {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%); /* centraliza verticalmente */
   z-index: 10;
 
   width: 34px;
   height: 34px;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1.5px solid rgba(255, 255, 255, 0.5);
-  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35); /* preto semitransparente */
+  border: 1.5px solid rgba(255, 255, 255, 0.5); /* borda branca sutil */
+  border-radius: 50%; /* círculo perfeito */
   color: #fff;
   font-size: 1.4rem;
   font-weight: 300;
@@ -199,35 +368,53 @@ body { background: #fff; margin: 0; padding: 0; }
   justify-content: center;
   cursor: pointer;
 
-  /* PERFORMANCE: transition apenas em transform e opacity */
-  transition: transform 0.2s, opacity 0.2s;
+  transition: transform 0.2s, opacity 0.2s; /* só GPU */
   will-change: transform;
 }
+
+/* ATENÇÃO: o translateY(-50%) precisa ser repetido aqui.
+   Se omitir, o hover sobrescreve o centramento vertical
+   e a seta pula para fora do lugar. */
 .arrowBtn:hover {
   background: #feb32b;
   border-color: #feb32b;
   color: #000;
   transform: translateY(-50%) scale(1.1);
 }
-.arrowBtn--left  { left: 10px; }
-.arrowBtn--right { right: 10px; }
+
+.arrowBtn--left  { left: 10px;  } /* seta esquerda */
+.arrowBtn--right { right: 10px; } /* seta direita  */
 
 @media (min-width: 768px) {
   .arrowBtn { width: 40px; height: 40px; font-size: 1.6rem; }
-  .arrowBtn--left  { left: 14px; }
+  .arrowBtn--left  { left: 14px;  }
   .arrowBtn--right { right: 14px; }
 }
 
 
-/* ── 9. FAIXA + BOTÃO "SAIBA MAIS" ───────────────────────── */
+/* ── 9. FAIXA + BOTÃO "SAIBA MAIS" ───────────────────────────
+   Faixa preta abaixo do carrossel que exibe o botão
+   "Saiba mais" quando o slide atual tem campanha.
+   Quando não há campanha, a faixa continua existindo
+   (min-height) para não deslocar o layout da página.
+   ─────────────────────────────────────────────────────────── */
+
+/* .saibaMaisFaixa — container da faixa
+   min-height: 56px → garante altura mesmo sem botão,
+   evitando salto de layout entre slides com e sem campanha. */
 .saibaMaisFaixa {
   background: #000;
   display: flex;
   justify-content: center;
   padding: 12px 0 16px;
-  min-height: 56px;
+  min-height: 56px; /* altura reservada mesmo quando vazio */
 }
 
+/* .saibaMaisBtn — pill branco com texto escuro
+   border-radius: 999px → valor alto garante pill perfeito
+   em qualquer tamanho sem precisar calcular o raio exato.
+   white-space: nowrap → impede o texto de quebrar em duas
+   linhas em telas pequenas. */
 .saibaMaisBtn {
   padding: 10px 32px;
   font-size: 0.9rem;
@@ -246,29 +433,53 @@ body { background: #fff; margin: 0; padding: 0; }
 @media (min-width: 1024px) { .saibaMaisBtn { padding: 13px 48px; font-size: 1.05rem; } }
 
 
-/* ── 10. BOTÕES ANIMADOS ──────────────────────────────────── */
+/* ── 10. BOTÕES ANIMADOS ──────────────────────────────────────
+   Classes utilitárias de animação pura — aplicadas junto
+   com outras classes de estilo no JSX.
+   Ex: className="glowButton avaliarBtn"
+
+   Separar a animação do estilo permite reutilizar o efeito
+   em qualquer botão sem duplicar código.
+
+   will-change: transform
+     → Cria camada GPU dedicada para o elemento.
+       Use APENAS em elementos que realmente animam —
+       usar em tudo aumenta o uso de memória da GPU.
+   ─────────────────────────────────────────────────────────── */
+
+/* .glowButton — pulsação usada nos CTAs principais
+   (Avaliar agora!, Avançar, Saiba mais do clube) */
 .glowButton {
   animation: glowPulse 1.6s ease-in-out infinite;
-  will-change: transform; /* PERFORMANCE: promove à própria camada GPU */
+  will-change: transform;
 }
+
+/* .pulseScale — pulsação alternativa com crescimento
+   levemente maior (1.08) e sem variação de opacidade */
 .pulseScale {
   animation: pulseScale 2s infinite;
   will-change: transform;
 }
 
 
-/* ── 11. BOTÕES ESPECÍFICOS ───────────────────────────────── */
+/* ── 11. BOTÕES ESPECÍFICOS ───────────────────────────────────
+   Botões com identidade visual própria, além da animação.
+   Cada um recebe a classe de animação + esta classe de estilo.
+   ─────────────────────────────────────────────────────────── */
 
-/* "Avaliar agora!" no hero — pill laranja */
+/* .avaliarBtn — "Avaliar agora!" no hero
+   Pill laranja (#feb32b), cor da marca.
+   Aparece sobre fundo preto — contraste alto intencional.
+   Recebe também .glowButton para o efeito de pulso. */
 .avaliarBtn {
   padding: 14px 40px;
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: #1a1a1a;
-  background: #feb32b;
+  color: #1a1a1a;          /* texto escuro sobre laranja */
+  background: #feb32b;     /* laranja da marca            */
   border: none;
-  border-radius: 999px;
+  border-radius: 999px;    /* pill perfeito               */
   cursor: pointer;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   transition: transform 0.2s;
@@ -278,7 +489,10 @@ body { background: #fff; margin: 0; padding: 0; }
 @media (min-width: 768px)  { .avaliarBtn { font-size: 1.15rem; padding: 15px 48px; } }
 @media (min-width: 1024px) { .avaliarBtn { font-size: 1.25rem; } }
 
-/* "Clique aqui e saiba mais!" sobre a seção Clube */
+/* .clubeBtn — "Clique aqui e saiba mais!" na seção Clube
+   position: absolute → flutua sobre a imagem do banner.
+   O pai <section> precisa ter position: relative (no JSX).
+   bottom: 40px → distância da borda inferior da section. */
 .clubeBtn {
   position: absolute;
   bottom: 40px;
@@ -299,7 +513,17 @@ body { background: #fff; margin: 0; padding: 0; }
 @media (min-width: 768px) { .clubeBtn { font-size: 1.1rem; padding: 16px 44px; } }
 
 
-/* ── 12. MODAL CAMPANHA — botão fechar ────────────────────── */
+/* ── 12. MODAL CAMPANHA — botão fechar ────────────────────────
+   Botão X no canto superior direito do modal de campanha.
+   Mesmo estilo visual das .arrowBtn para consistência.
+
+   position: absolute + top/right
+     → Ancorado no canto do modal (pai com position: relative).
+
+   z-index: 50
+     → Na frente das imagens da campanha, mas abaixo do
+       overlay principal (z-index: 9999).
+   ─────────────────────────────────────────────────────────── */
 .campaignCloseBtn {
   position: absolute;
   top: 16px; right: 16px;
@@ -327,9 +551,23 @@ body { background: #fff; margin: 0; padding: 0; }
 }
 
 
-/* ── 13. MODAL AVALIAÇÃO — overlay e container ────────────── */
+/* ── 13. MODAL AVALIAÇÃO — overlay e container ────────────────
+   O modal tem duas camadas:
+     1. .ModalOverlay → fundo escuro que cobre a tela toda
+     2. .modalContainer → a caixa laranja em si
+   ─────────────────────────────────────────────────────────── */
 
-/* Fundo escuro que cobre a tela toda */
+/* .ModalOverlay — fundo semitransparente que bloqueia o fundo
+   position: fixed → cobre a tela toda, mesmo com scroll.
+   width/height 100% → ocupa exatamente o viewport.
+   background rgba(0,0,0,0.65) → preto 65% opaco — escuro
+     o suficiente para destacar o modal.
+   z-index: 9999 → na frente de absolutamente tudo.
+   justify/align center → centraliza o .modalContainer.
+
+   Breakpoint mobile (max-width: 599px):
+     align-items: flex-end → modal sobe de baixo como
+     "bottom sheet" — padrão UX para formulários em mobile. */
 .ModalOverlay {
   position: fixed;
   top: 0; left: 0;
@@ -340,10 +578,26 @@ body { background: #fff; margin: 0; padding: 0; }
   background: rgba(0, 0, 0, 0.65);
   z-index: 9999;
 }
-/* Mobile: modal sobe de baixo como bottom sheet */
-@media (max-width: 599px) { .ModalOverlay { align-items: flex-end; } }
+@media (max-width: 599px) {
+  .ModalOverlay { align-items: flex-end; } /* bottom sheet no mobile */
+}
 
-/* Caixa laranja centralizada */
+/* .modalContainer — a caixa laranja do modal de avaliação
+   width: 650px / height: 600px → tamanho fixo no desktop.
+   max-height: 90vh → nunca ultrapassa 90% da tela,
+     importante em notebooks com tela baixa.
+   overflow-y: auto → se o conteúdo passar de 90vh,
+     scroll interno em vez de vazar para fora.
+   justify-content: space-between → distribui header,
+     conteúdo e navegação nos extremos da caixa.
+   animation: modalUp → entra deslizando de baixo para cima.
+   will-change: transform, opacity → GPU para a animação.
+
+   Mobile (max-width: 599px) — bottom sheet:
+     width: 100% → largura total da tela.
+     border-radius: 24px 24px 0 0 → arredondado só no topo,
+     encosta na borda inferior da tela.
+     box-shadow negativo no Y → sombra vai para cima. */
 .modalContainer {
   width: 650px;
   height: 600px;
@@ -356,25 +610,31 @@ body { background: #fff; margin: 0; padding: 0; }
   border-radius: 25px;
   background: #ffae00;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-  /* PERFORMANCE: animation usa apenas transform e opacity */
   animation: modalUp 0.35s ease;
   will-change: transform, opacity;
 }
-/* Mobile: ocupa tela por baixo */
 @media (max-width: 599px) {
   .modalContainer {
     width: 100%; height: auto; max-height: 92vh;
     padding: 28px 20px;
-    border-radius: 24px 24px 0 0;
+    border-radius: 24px 24px 0 0; /* arredondado só no topo */
     box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
   }
 }
-@media (min-width: 1024px) { .modalContainer { width: 700px; height: 650px; } }
+@media (min-width: 1024px) {
+  /* Desktop: um pouco mais alto para os botões de nota maiores */
+  .modalContainer { width: 700px; height: 650px; }
+}
 
 
-/* ── 14. MODAL AVALIAÇÃO — conteúdo ──────────────────────── */
+/* ── 14. MODAL AVALIAÇÃO — conteúdo ──────────────────────────
+   Tudo dentro do .modalContainer:
+   header, pergunta, botões de nota, textarea e navegação.
+   ─────────────────────────────────────────────────────────── */
 
-/* Header: título + botão X */
+/* .modalHeader — linha do topo com título e botão X
+   position: relative → âncora o .closeBtn (absolute)
+   dentro do header sem sair do container. */
 .modalHeader {
   position: relative;
   display: flex;
@@ -383,7 +643,10 @@ body { background: #fff; margin: 0; padding: 0; }
   font-weight: bold;
 }
 
-/* Botão X fechar */
+/* .closeBtn — botão X de fechar no canto esquerdo do header
+   position: absolute + left: 0 → gruda no canto esquerdo
+   do .modalHeader sem empurrar o título para o lado.
+   O título continua centralizado como se o X não existisse. */
 .closeBtn {
   position: absolute;
   left: 0; top: 0;
@@ -397,7 +660,10 @@ body { background: #fff; margin: 0; padding: 0; }
 .closeBtn:hover { transform: scale(1.15); }
 @media (min-width: 768px) { .closeBtn { font-size: 26px; } }
 
-/* Texto da pergunta */
+/* .modalQuestion — texto da pergunta de cada etapa
+   Ex: "Como você avalia o atendimento?"
+   margin bottom generoso para dar respiro visual
+   antes dos botões de nota. */
 .modalQuestion {
   text-align: center;
   font-size: 22px;
@@ -407,19 +673,26 @@ body { background: #fff; margin: 0; padding: 0; }
 .modalQuestion h1 { max-width: 100%; margin: 0 auto; line-height: 1.35; }
 @media (min-width: 768px) {
   .modalQuestion { font-size: 38px; margin: 24px 0 40px; }
-  .modalQuestion h1 { max-width: 480px; }
+  .modalQuestion h1 { max-width: 480px; } /* limita largura para legibilidade */
 }
 @media (min-width: 1024px) { .modalQuestion { font-size: 35px; margin: 30px 0 50px; } }
 
-/* ──────────────────────────────────────────────────────────
-   BOTÕES DE NOTA 1–5
-   Aumentados para chamar atenção do cliente.
-   Mobile:  80×80px  — grandes o suficiente para toque fácil
-   Tablet:  100×100px — dominam visualmente a tela
-   Desktop: 110×110px — presença forte sem quebrar layout
-   ────────────────────────────────────────────────────────── */
+/* ── BOTÕES DE NOTA 1 a 5 ─────────────────────────────────────
+   Botões grandes e coloridos — principal ação do app.
+   Intencionalmente grandes para facilitar o toque e
+   chamar a atenção do cliente.
 
-/* Fileira de botões de nota 1–5 */
+   TAMANHOS POR DISPOSITIVO:
+     Mobile  (< 480px): 80×80px   — cabe 5 em linha com gap
+     Celular (≥ 480px): 88×88px   — mais área de toque
+     Tablet  (≥ 768px): 100×100px — dominam a tela
+     Desktop (≥1024px): 110×110px — presença forte
+   ─────────────────────────────────────────────────────────── */
+
+/* .avaliacao — fileira que agrupa os 5 botões
+   flex-wrap: wrap → em telas muito pequenas os botões
+   quebram para baixo em vez de encolher.
+   A partir de 480px, nowrap = todos em uma única linha. */
 .avaliacao {
   display: flex;
   justify-content: center;
@@ -431,28 +704,31 @@ body { background: #fff; margin: 0; padding: 0; }
 @media (min-width: 768px)  { .avaliacao { gap: 16px; } }
 @media (min-width: 1024px) { .avaliacao { gap: 18px; } }
 
-/* Botão de nota individual */
+/* .nota — botão individual de nota
+   font-weight: 900 → o número precisa ser bem legível
+   sobre os backgrounds coloridos.
+   box-shadow fixo → profundidade visual sem custo de
+   performance (sombra estática, não animada).
+   user-select: none → impede seleção do número como texto.
+   -webkit-tap-highlight-color → remove o flash azul/cinza
+   padrão do browser ao tocar em dispositivos mobile. */
 .nota {
-  width: 80px;  height: 80px;   /* mobile — grande para toque */
+  width: 80px;  height: 80px;
   border-radius: 16px;
   border: none;
   font-size: 32px;
   font-weight: 900;
   cursor: pointer;
-  /* PERFORMANCE: transition só em transform e opacity */
   transition: transform 0.18s ease, opacity 0.18s ease;
   will-change: transform;
-  /* Sombra fixa (não animada) para dar profundidade */
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
-  /* Impede seleção acidental de texto no toque */
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2); /* sombra fixa, sem custo de GPU    */
+  user-select: none;                           /* sem seleção de texto no toque    */
+  -webkit-tap-highlight-color: transparent;   /* sem flash ao tocar no mobile     */
 }
 @media (min-width: 480px) {
-  .nota { width: 88px;  height: 88px;  font-size: 36px; border-radius: 18px; }
+  .nota { width: 88px; height: 88px; font-size: 36px; border-radius: 18px; }
 }
 @media (min-width: 768px) {
-  /* Tablet — tamanho máximo, impacto visual total */
   .nota { width: 100px; height: 100px; font-size: 44px; border-radius: 20px; }
 }
 @media (min-width: 1024px) {
@@ -460,23 +736,33 @@ body { background: #fff; margin: 0; padding: 0; }
 }
 
 .nota:hover  { transform: scale(1.12); opacity: 0.95; }
-.nota:active { transform: scale(0.93); }
+.nota:active { transform: scale(0.93); } /* feedback de clique: encolhe levemente */
 
-/* Cores — gradiente vermelho → verde (inalteradas) */
-.nota-1 { background: linear-gradient(135deg, red, #ff7a7a); }
-.nota-2 { background: linear-gradient(135deg, rgb(247,59,59), #ff7aa2); }
-.nota-3 { background: linear-gradient(135deg, yellow, #ffe88c); }
-.nota-4 { background: linear-gradient(135deg, lightgreen, #4ade80); }
-.nota-5 { background: linear-gradient(135deg, #22c55e, green); }
+/* Cores — gradiente vermelho → verde.
+   Transmite visualmente a escala de pior para melhor.
+   O gradiente diagonal (135deg) dá volume ao botão. */
+.nota-1 { background: linear-gradient(135deg, red, #ff7a7a); }           /* péssimo   */
+.nota-2 { background: linear-gradient(135deg, rgb(247,59,59), #ff7aa2); } /* ruim      */
+.nota-3 { background: linear-gradient(135deg, yellow, #ffe88c); }         /* regular   */
+.nota-4 { background: linear-gradient(135deg, lightgreen, #4ade80); }     /* bom       */
+.nota-5 { background: linear-gradient(135deg, #22c55e, green); }          /* excelente */
 
-/* Nota selecionada — borda branca + escala */
+/* .selecionado — estado visual quando o cliente escolhe uma nota.
+   Adicionado via className no JSX quando a nota está ativa.
+   Borda branca + escala maior + brilho ao redor →
+   feedback claro de "esta é minha escolha atual". */
 .selecionado {
   border: 4px solid white;
   transform: scale(1.18);
   box-shadow: 0 0 24px rgba(255, 255, 255, 0.85);
 }
 
-/* Campo de texto livre (observação) */
+/* .observacao textarea — campo de comentário livre
+   O cliente escreve um texto após escolher a nota.
+   resize: none → impede redimensionamento manual,
+   que quebraria o layout fixo do modal.
+   transition em border-color e background apenas →
+   muda aparência no focus sem recalcular layout. */
 .observacao textarea {
   width: 100%; height: 110px;
   padding: 10px;
@@ -490,9 +776,12 @@ body { background: #fff; margin: 0; padding: 0; }
 @media (min-width: 768px)  { .observacao textarea { height: 130px; font-size: 18px; border-radius: 20px; padding: 12px; } }
 @media (min-width: 1024px) { .observacao textarea { height: 150px; font-size: 20px; } }
 .observacao textarea::placeholder { color: #999; }
+/* Focus: borda vira verde (cor de sucesso) e fundo fica branco */
 .observacao textarea:focus { outline: none; border: 2px solid #4ade80; background: #fff; }
 
-/* Rodapé de navegação: voltar / avançar / enviar */
+/* .navigation — rodapé do modal com Voltar / Avançar / Enviar
+   justify-content: space-between → Voltar no lado esquerdo,
+   Avançar/Enviar no lado direito (via .navLeft e .navRight). */
 .navigation {
   display: flex;
   justify-content: space-between;
@@ -503,10 +792,15 @@ body { background: #fff; margin: 0; padding: 0; }
 }
 @media (min-width: 1024px) { .navigation { margin-top: 10px; gap: 12px; } }
 
+/* Grupos de botões dentro do .navigation.
+   Permitem adicionar mais de um botão em cada lado
+   sem quebrar o espaçamento. */
 .navLeft  { display: flex; justify-content: flex-start; gap: 10px; }
 .navRight { display: flex; justify-content: flex-end;   gap: 10px; }
 
-/* Botão Voltar */
+/* .voltarBtn — botão Voltar
+   Branco sobre laranja — hierarquia visual: Voltar tem
+   menos destaque que Avançar (que pulsa com glowPulse). */
 .voltarBtn {
   background: white;
   padding: 10px 22px;
@@ -521,7 +815,9 @@ body { background: #fff; margin: 0; padding: 0; }
 @media (min-width: 1024px) { .voltarBtn { padding: 12px 30px; font-size: 20px; } }
 .voltarBtn:hover { transform: scale(1.05); }
 
-/* Botão Avançar */
+/* .nextBtn — botão Avançar
+   Mesmo visual do Voltar, mas com glowPulse para indicar
+   que é a ação primária esperada nesta etapa. */
 .nextBtn {
   background: white;
   padding: 10px 22px;
@@ -536,7 +832,9 @@ body { background: #fff; margin: 0; padding: 0; }
 @media (min-width: 768px)  { .nextBtn { padding: 12px 28px; font-size: 18px; } }
 @media (min-width: 1024px) { .nextBtn { padding: 12px 30px; font-size: 20px; } }
 
-/* Botão Enviar */
+/* .submitBtn — botão Enviar (última etapa)
+   Verde (#22c55e) comunica "conclusão / sucesso".
+   Também tem glowPulse como CTA final da avaliação. */
 .submitBtn {
   background: #22c55e;
   padding: 12px 26px;
@@ -552,7 +850,10 @@ body { background: #fff; margin: 0; padding: 0; }
 @media (min-width: 768px)  { .submitBtn { padding: 13px 30px; font-size: 20px; } }
 @media (min-width: 1024px) { .submitBtn { padding: 14px 34px; font-size: 22px; } }
 
-/* Tela de confirmação após envio */
+/* .finishContainer — tela de confirmação após o envio
+   Substitui o conteúdo do modal depois do submitBtn.
+   height: 100% + flex centralizado → check e texto
+   ficam no meio exato da caixa laranja. */
 .finishContainer {
   height: 100%;
   display: flex;
@@ -563,7 +864,9 @@ body { background: #fff; margin: 0; padding: 0; }
   gap: 20px;
 }
 
-/* Ícone de check verde */
+/* .checkIcon — círculo verde com ✓ de confirmação
+   Feedback visual de sucesso após o envio.
+   border-radius: 50% → círculo perfeito. */
 .checkIcon {
   width: 70px; height: 70px;
   border-radius: 50%;
@@ -577,16 +880,25 @@ body { background: #fff; margin: 0; padding: 0; }
 }
 @media (min-width: 1024px) { .checkIcon { width: 80px; height: 80px; font-size: 40px; } }
 
-/* Ícone animado de dica de swipe — usado no carrossel.jsx */
+/* .swipe-hint — ícone animado de "arraste para o lado"
+   Exibido brevemente no carrossel.jsx para ensinar
+   o gesto de swipe ao usuário na primeira visita. */
 .swipe-hint {
   animation: swipeHint 1.4s ease-in-out infinite;
   will-change: transform, opacity;
 }
 
 
-/* ── 15. LEGADO ───────────────────────────────────────────── */
-/* Classes mantidas para não quebrar referências antigas      */
+/* ── 15. LEGADO ───────────────────────────────────────────────
+   Classes e IDs do código anterior à refatoração.
+   NÃO REMOVER — ainda podem ser referenciadas em
+   componentes antigos ou campanhas específicas.
+   Quando tiver certeza que não são mais usadas,
+   pode deletar com segurança e commitar com:
+   git commit -m "chore: remove classes legadas do CSS"
+   ─────────────────────────────────────────────────────────── */
 
+/* Título de busca da versão anterior */
 #titleSearch {
   padding-top: 30px;
   font-size: 32px;
@@ -597,14 +909,17 @@ body { background: #fff; margin: 0; padding: 0; }
 @media (min-width: 768px)  { #titleSearch { padding-top: 24px; font-size: 48px; } }
 @media (min-width: 1024px) { #titleSearch { padding-top: 20px; font-size: 62px; max-width: 1100px; } }
 
+/* Imagem principal da versão anterior */
 #Pamonha { width: 100%; aspect-ratio: 4 / 3; height: auto; }
 @media (min-width: 768px)  { #Pamonha { max-width: 860px; } }
 @media (min-width: 1024px) { #Pamonha { aspect-ratio: 16 / 7; max-width: 1100px; } }
 
+/* Container de botões da versão anterior */
 #containerBotão { max-width: 100%; }
 @media (min-width: 768px)  { #containerBotão { max-width: 900px; } }
 @media (min-width: 1024px) { #containerBotão { max-width: 1280px; } }
 
+/* Modal da versão anterior — mantido para não quebrar campanhas */
 #modal { display: flex; padding: 40px 20px; background: #ffae00; }
 @media (min-width: 768px)  { #modal { padding: 50px 40px; } }
 @media (min-width: 1024px) { #modal { padding: 70px 100px; } }
