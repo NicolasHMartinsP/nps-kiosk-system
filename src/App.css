@@ -28,6 +28,12 @@
 
 /* ── 2. ANIMAÇÕES ─────────────────────────────────────────── */
 
+/*
+  PERFORMANCE: todas as animações usam apenas transform e opacity.
+  Essas propriedades rodam na GPU e não forçam recálculo de layout,
+  o que elimina o travamento em tablets e dispositivos mais lentos.
+*/
+
 @keyframes swipeHint {
   0%   { opacity: 0; transform: translateX(0); }
   50%  { opacity: 1; transform: translateX(8px); }
@@ -45,17 +51,11 @@
 }
 
 /* Brilho laranja pulsante — botões de ação principais */
+/* PERFORMANCE: removido box-shadow animado (causa repaint).
+   Mantido apenas transform — mesma sensação visual, muito mais leve. */
 @keyframes glowPulse {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 0 6px rgba(254, 179, 43, 0.5);
-  }
-  50% {
-    transform: scale(1.07);
-    box-shadow:
-      0 0 22px rgba(254, 179, 43, 0.95),
-      0 0 44px rgba(254, 179, 43, 0.4);
-  }
+  0%, 100% { transform: scale(1);    opacity: 1; }
+  50%       { transform: scale(1.07); opacity: 0.92; }
 }
 
 
@@ -63,14 +63,17 @@
 @font-face {
   font-family: "textgyreschola.regular";
   src: url("./assets/Fonts/texgyreschola-regular.otf");
+  font-display: swap; /* PERFORMANCE: não bloqueia renderização enquanto carrega */
 }
 @font-face {
   font-family: "textgyreschola.bold";
   src: url("./assets/Fonts/texgyreschola-bold.otf");
+  font-display: swap;
 }
 @font-face {
   font-family: "novabold";
   src: url("./assets/Fonts/novabold.otf");
+  font-display: swap;
 }
 
 
@@ -86,6 +89,8 @@ body { background: #fff; margin: 0; padding: 0; }
   width: 44px;
   cursor: pointer;
   z-index: 1000;
+  /* PERFORMANCE: avisa a GPU que esse elemento vai se mover */
+  will-change: transform;
 }
 @media (min-width: 768px)  { .logo-floating { top: 26px; left: 18px; width: 54px; } }
 @media (min-width: 1024px) { .logo-floating { top: 30px; left: 24px; width: 64px; } }
@@ -120,7 +125,7 @@ body { background: #fff; margin: 0; padding: 0; }
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  padding-top: 40px; /* espaço para o logo fixo não sobrepor */
+  padding-top: 40px;
   text-align: center;
 }
 @media (min-width: 1024px) {
@@ -173,11 +178,6 @@ body { background: #fff; margin: 0; padding: 0; }
 
 
 /* ── 8. SETAS DE NAVEGAÇÃO ────────────────────────────────── */
-/*
-   Círculo semitransparente com borda branca sutil.
-   Hover: inverte para laranja.
-   Usado no CarrosselHero e no CampanhaModal.
-*/
 .arrowBtn {
   position: absolute;
   top: 50%;
@@ -199,7 +199,9 @@ body { background: #fff; margin: 0; padding: 0; }
   justify-content: center;
   cursor: pointer;
 
-  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  /* PERFORMANCE: transition apenas em transform e opacity */
+  transition: transform 0.2s, opacity 0.2s;
+  will-change: transform;
 }
 .arrowBtn:hover {
   background: #feb32b;
@@ -218,11 +220,6 @@ body { background: #fff; margin: 0; padding: 0; }
 
 
 /* ── 9. FAIXA + BOTÃO "SAIBA MAIS" ───────────────────────── */
-/*
-   Faixa preta abaixo do carrossel.
-   Sempre presente (min-height) para não deslocar o layout
-   quando o botão some nos slides sem campanha.
-*/
 .saibaMaisFaixa {
   background: #000;
   display: flex;
@@ -231,7 +228,6 @@ body { background: #fff; margin: 0; padding: 0; }
   min-height: 56px;
 }
 
-/* Pill branco com texto preto — estilo clean da marca */
 .saibaMaisBtn {
   padding: 10px 32px;
   font-size: 0.9rem;
@@ -243,14 +239,22 @@ body { background: #fff; margin: 0; padding: 0; }
   border-radius: 999px;
   cursor: pointer;
   white-space: nowrap;
+  transition: transform 0.2s;
 }
+.saibaMaisBtn:hover { transform: scale(1.04); }
 @media (min-width: 768px)  { .saibaMaisBtn { padding: 12px 40px; font-size: 1rem; } }
 @media (min-width: 1024px) { .saibaMaisBtn { padding: 13px 48px; font-size: 1.05rem; } }
 
 
 /* ── 10. BOTÕES ANIMADOS ──────────────────────────────────── */
-.glowButton { animation: glowPulse 1.6s ease-in-out infinite; }
-.pulseScale { animation: pulseScale 2s infinite; }
+.glowButton {
+  animation: glowPulse 1.6s ease-in-out infinite;
+  will-change: transform; /* PERFORMANCE: promove à própria camada GPU */
+}
+.pulseScale {
+  animation: pulseScale 2s infinite;
+  will-change: transform;
+}
 
 
 /* ── 11. BOTÕES ESPECÍFICOS ───────────────────────────────── */
@@ -267,7 +271,10 @@ body { background: #fff; margin: 0; padding: 0; }
   border-radius: 999px;
   cursor: pointer;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  transition: transform 0.2s;
+  will-change: transform;
 }
+.avaliarBtn:hover { transform: scale(1.04); }
 @media (min-width: 768px)  { .avaliarBtn { font-size: 1.15rem; padding: 15px 48px; } }
 @media (min-width: 1024px) { .avaliarBtn { font-size: 1.25rem; } }
 
@@ -285,12 +292,14 @@ body { background: #fff; margin: 0; padding: 0; }
   border-radius: 999px;
   cursor: pointer;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  transition: transform 0.2s;
+  will-change: transform;
 }
+.clubeBtn:hover { transform: scale(1.04); }
 @media (min-width: 768px) { .clubeBtn { font-size: 1.1rem; padding: 16px 44px; } }
 
 
 /* ── 12. MODAL CAMPANHA — botão fechar ────────────────────── */
-/* Mesmo estilo das setas para consistência visual */
 .campaignCloseBtn {
   position: absolute;
   top: 16px; right: 16px;
@@ -308,12 +317,13 @@ body { background: #fff; margin: 0; padding: 0; }
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s, border-color 0.2s;
+  transition: transform 0.2s, opacity 0.2s;
 }
 .campaignCloseBtn:hover {
   background: #feb32b;
   border-color: #feb32b;
   color: #000;
+  transform: scale(1.1);
 }
 
 
@@ -346,7 +356,9 @@ body { background: #fff; margin: 0; padding: 0; }
   border-radius: 25px;
   background: #ffae00;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  /* PERFORMANCE: animation usa apenas transform e opacity */
   animation: modalUp 0.35s ease;
+  will-change: transform, opacity;
 }
 /* Mobile: ocupa tela por baixo */
 @media (max-width: 599px) {
@@ -357,7 +369,7 @@ body { background: #fff; margin: 0; padding: 0; }
     box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
   }
 }
-@media (min-width: 1024px) { .modalContainer { width: 700px; height: 620px; } }
+@media (min-width: 1024px) { .modalContainer { width: 700px; height: 650px; } }
 
 
 /* ── 14. MODAL AVALIAÇÃO — conteúdo ──────────────────────── */
@@ -380,7 +392,7 @@ body { background: #fff; margin: 0; padding: 0; }
   font-size: 22px;
   font-weight: bold;
   cursor: pointer;
-  transition: 0.2s;
+  transition: transform 0.2s;
 }
 .closeBtn:hover { transform: scale(1.15); }
 @media (min-width: 768px) { .closeBtn { font-size: 26px; } }
@@ -399,33 +411,58 @@ body { background: #fff; margin: 0; padding: 0; }
 }
 @media (min-width: 1024px) { .modalQuestion { font-size: 35px; margin: 30px 0 50px; } }
 
+/* ──────────────────────────────────────────────────────────
+   BOTÕES DE NOTA 1–5
+   Aumentados para chamar atenção do cliente.
+   Mobile:  80×80px  — grandes o suficiente para toque fácil
+   Tablet:  100×100px — dominam visualmente a tela
+   Desktop: 110×110px — presença forte sem quebrar layout
+   ────────────────────────────────────────────────────────── */
+
 /* Fileira de botões de nota 1–5 */
 .avaliacao {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
 }
-@media (min-width: 768px)  { .avaliacao { gap: 12px; flex-wrap: nowrap; } }
-@media (min-width: 1024px) { .avaliacao { gap: 15px; } }
+@media (min-width: 480px)  { .avaliacao { gap: 12px; flex-wrap: nowrap; } }
+@media (min-width: 768px)  { .avaliacao { gap: 16px; } }
+@media (min-width: 1024px) { .avaliacao { gap: 18px; } }
 
 /* Botão de nota individual */
 .nota {
-  width: 54px; height: 54px;
-  border-radius: 10px;
+  width: 80px;  height: 80px;   /* mobile — grande para toque */
+  border-radius: 16px;
   border: none;
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 32px;
+  font-weight: 900;
   cursor: pointer;
-  transition: all 0.2s ease;
+  /* PERFORMANCE: transition só em transform e opacity */
+  transition: transform 0.18s ease, opacity 0.18s ease;
+  will-change: transform;
+  /* Sombra fixa (não animada) para dar profundidade */
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  /* Impede seleção acidental de texto no toque */
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
-@media (min-width: 768px)  { .nota { width: 70px; height: 70px; font-size: 38px; } }
-@media (min-width: 1024px) { .nota { font-size: 33px; } }
-.nota:hover  { transform: scale(1.08); }
-.nota:active { transform: scale(0.9); }
+@media (min-width: 480px) {
+  .nota { width: 88px;  height: 88px;  font-size: 36px; border-radius: 18px; }
+}
+@media (min-width: 768px) {
+  /* Tablet — tamanho máximo, impacto visual total */
+  .nota { width: 100px; height: 100px; font-size: 44px; border-radius: 20px; }
+}
+@media (min-width: 1024px) {
+  .nota { width: 110px; height: 110px; font-size: 48px; border-radius: 22px; }
+}
 
-/* Cores — gradiente vermelho → verde */
+.nota:hover  { transform: scale(1.12); opacity: 0.95; }
+.nota:active { transform: scale(0.93); }
+
+/* Cores — gradiente vermelho → verde (inalteradas) */
 .nota-1 { background: linear-gradient(135deg, red, #ff7a7a); }
 .nota-2 { background: linear-gradient(135deg, rgb(247,59,59), #ff7aa2); }
 .nota-3 { background: linear-gradient(135deg, yellow, #ffe88c); }
@@ -434,9 +471,9 @@ body { background: #fff; margin: 0; padding: 0; }
 
 /* Nota selecionada — borda branca + escala */
 .selecionado {
-  border: 3px solid white;
-  transform: scale(1.15);
-  box-shadow: 0 0 18px rgba(255, 255, 255, 0.8);
+  border: 4px solid white;
+  transform: scale(1.18);
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.85);
 }
 
 /* Campo de texto livre (observação) */
@@ -448,7 +485,7 @@ body { background: #fff; margin: 0; padding: 0; }
   background: #f9f9f9;
   font-size: 16px;
   resize: none;
-  transition: 0.2s;
+  transition: border-color 0.2s, background 0.2s;
 }
 @media (min-width: 768px)  { .observacao textarea { height: 130px; font-size: 18px; border-radius: 20px; padding: 12px; } }
 @media (min-width: 1024px) { .observacao textarea { height: 150px; font-size: 20px; } }
@@ -478,7 +515,7 @@ body { background: #fff; margin: 0; padding: 0; }
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  transition: 0.2s;
+  transition: transform 0.2s;
 }
 @media (min-width: 768px)  { .voltarBtn { padding: 12px 28px; font-size: 18px; } }
 @media (min-width: 1024px) { .voltarBtn { padding: 12px 30px; font-size: 20px; } }
@@ -494,6 +531,7 @@ body { background: #fff; margin: 0; padding: 0; }
   font-weight: bold;
   cursor: pointer;
   animation: glowPulse 1.6s ease-in-out infinite;
+  will-change: transform;
 }
 @media (min-width: 768px)  { .nextBtn { padding: 12px 28px; font-size: 18px; } }
 @media (min-width: 1024px) { .nextBtn { padding: 12px 30px; font-size: 20px; } }
@@ -509,6 +547,7 @@ body { background: #fff; margin: 0; padding: 0; }
   color: white;
   cursor: pointer;
   animation: glowPulse 1.6s ease-in-out infinite;
+  will-change: transform;
 }
 @media (min-width: 768px)  { .submitBtn { padding: 13px 30px; font-size: 20px; } }
 @media (min-width: 1024px) { .submitBtn { padding: 14px 34px; font-size: 22px; } }
@@ -539,7 +578,10 @@ body { background: #fff; margin: 0; padding: 0; }
 @media (min-width: 1024px) { .checkIcon { width: 80px; height: 80px; font-size: 40px; } }
 
 /* Ícone animado de dica de swipe — usado no carrossel.jsx */
-.swipe-hint { animation: swipeHint 1.4s ease-in-out infinite; }
+.swipe-hint {
+  animation: swipeHint 1.4s ease-in-out infinite;
+  will-change: transform, opacity;
+}
 
 
 /* ── 15. LEGADO ───────────────────────────────────────────── */
