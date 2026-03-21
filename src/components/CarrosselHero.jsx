@@ -1,5 +1,5 @@
 /* CarrosselHero.jsx — Carrossel do hero + faixa "Saiba mais". Documentação: README.md → Componentes → CarrosselHero.jsx */
-
+import "../styles/CarrosselHero.css";
 export default function CarrosselHero({
   images,
   currentIndex,
@@ -37,8 +37,12 @@ export default function CarrosselHero({
           </div>
 
           {/* Setas — reutilizam .arrowBtn do App.css */}
-          <button onClick={onPrev} className="arrowBtn arrowBtn--left">‹</button>
-          <button onClick={onNext} className="arrowBtn arrowBtn--right">›</button>
+          <button onClick={onPrev} className="arrowBtn arrowBtn--left">
+            ‹
+          </button>
+          <button onClick={onNext} className="arrowBtn arrowBtn--right">
+            ›
+          </button>
 
           {/* Dots — laranja = ativo, branco semitransparente = inativo */}
           <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2 z-10">

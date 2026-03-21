@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@keyframes swipeHint {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  } /* invisível, posição original  */
+  50% {
+    opacity: 1;
+    transform: translateX(8px);
+  } /* visível, 8px para a direita  */
+  100% {
+    opacity: 0;
+    transform: translateX(0);
+  } /* invisível, volta ao início   */
+}
+@keyframes modalUp {
+  from {
+    transform: translateY(240px);
+    opacity: 0;
+  } /* embaixo, invisível   */
+  to {
+    transform: translateY(15px);
+    opacity: 1;
+  } /* posição final, visível */
+}
+@keyframes pulseScale {
+  0%,
+  100% {
+    transform: scale(1);
+  } /* tamanho normal */
+  50% {
+    transform: scale(1.08);
+  } /* 8% maior       */
+}
+@keyframes glowPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  } /* estado base      */
+  50% {
+    transform: scale(1.07);
+    opacity: 0.92;
+  } /* pico da pulsação */
+}
+@font-face {
+  font-family: "textgyreschola.regular";
+  src: url("../assets/Fonts/texgyreschola-regular.otf");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "textgyreschola.bold";
+  src: url("../assets/Fonts/texgyreschola-bold.otf");
+  font-display: swap;
+}
+@font-face {
+  font-family: "novabold";
+  src: url("../assets/Fonts/novabold.otf");
+  font-display: swap;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  background: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+.arrowBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%); /* centraliza verticalmente */
+  z-index: 10;
+
+  width: 34px;
+  height: 34px;
+  background: rgba(0, 0, 0, 0.35); /* preto semitransparente */
+  border: 1.5px solid rgba(255, 255, 255, 0.5); /* borda branca sutil */
+  border-radius: 50%; /* círculo perfeito */
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 300;
+  line-height: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  transition:
+    transform 0.2s,
+    opacity 0.2s; /* só GPU */
+  will-change: transform;
+}
+.arrowBtn:hover {
+  background: #feb32b;
+  border-color: #feb32b;
+  color: #000;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.arrowBtn--left {
+  left: 10px;
+} /* seta esquerda */
+.arrowBtn--right {
+  right: 10px;
+} /* seta direita  */
+
+@media (min-width: 768px) {
+  .arrowBtn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.6rem;
+  }
+  .arrowBtn--left {
+    left: 14px;
+  }
+  .arrowBtn--right {
+    right: 14px;
+  }
+}

@@ -1,0 +1,72 @@
+.glowButton {
+  animation: glowPulse 1.6s ease-in-out infinite;
+  will-change: transform;
+}
+
+.pulseScale {
+  animation: pulseScale 2s infinite;
+  will-change: transform;
+}
+
+.avaliarBtn {
+  padding: 14px 40px;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #1a1a1a; /* texto escuro sobre laranja */
+  background: #feb32b; /* laranja da marca            */
+  border: none;
+  border-radius: 999px; /* pill perfeito               */
+  cursor: pointer;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  transition: transform 0.2s;
+  will-change: transform;
+}
+.avaliarBtn:hover {
+  transform: scale(1.04);
+}
+@media (min-width: 768px) {
+  .avaliarBtn {
+    font-size: 1.15rem;
+    padding: 15px 48px;
+  }
+}
+@media (min-width: 1024px) {
+  .avaliarBtn {
+    font-size: 1.25rem;
+  }
+}
+
+.clubeBtn {
+  position: absolute;
+  bottom: 40px;
+  padding: 14px 36px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #1a1a1a;
+  background: #feb32b;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  transition: transform 0.2s;
+  will-change: transform;
+}
+.clubeBtn:hover {
+  transform: scale(1.04);
+}
+@media (min-width: 768px) {
+  .clubeBtn {
+    font-size: 1.1rem;
+    padding: 16px 44px;
+  }
+}

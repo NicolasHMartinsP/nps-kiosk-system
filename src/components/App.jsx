@@ -1,35 +1,33 @@
 /* App.jsx — Orquestrador principal. Documentação: README.md → Componentes → App.jsx */
 
 import { useState } from "react";
-import "./App.css";
-
-import LogoFloating  from "./LogoFloating";
+import "../styles/base.css";
+import "../styles/Hero.css";
+import "../styles/Buttons.css";
+import "../styles/Legacy.css";
+import LogoFloating from "./LogoFloating";
 import CarrosselHero from "./CarrosselHero";
 import CampanhaModal from "./CampanhaModal";
-import Modal         from "./Modal";
-import Carrossel     from "./carrossel";
-
-import imgClube from "./assets/img/STORY5.png";
-
-import { images, campaignMap } from "./campaignData";
-import { useCarrossel }        from "./useCarrossel";
-import { useCampanha }         from "./useCampanha";
+import Modal from "./Modal";
+import Carrossel from "./carrossel";
+import imgClube from "../assets/img/Club/STORY5.png";
+import { images, campaignMap } from "../data/campaignData";
+import { useCarrossel } from "../hooks/useCarrossel";
+import { useCampanha } from "../hooks/useCampanha";
 
 function App() {
-
   /* Lê ?cidade= da URL para identificar a franquia no Firestore */
   const cidade =
     new URLSearchParams(window.location.search).get("cidade") || "desconhecida";
 
   const carrossel = useCarrossel(images);
-  const campanha  = useCampanha(images, carrossel.currentIndex, campaignMap);
+  const campanha = useCampanha(images, carrossel.currentIndex, campaignMap);
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [clubOpen,  setClubOpen]  = useState(false);
+  const [clubOpen, setClubOpen] = useState(false);
 
   return (
     <>
-
       {/* 1. HERO */}
       <div className="Hover">
         <LogoFloating />
@@ -77,7 +75,11 @@ function App() {
 
       {/* 4. SEÇÃO CLUBE */}
       <section className="w-full min-h-screen flex flex-col items-center justify-center relative">
-        <img src={imgClube} alt="Clube The Best" className="w-full object-cover" />
+        <img
+          src={imgClube}
+          alt="Clube The Best"
+          className="w-full object-cover"
+        />
         <button
           onClick={() => setClubOpen(true)}
           className="glowButton clubeBtn"
@@ -92,10 +94,7 @@ function App() {
       )}
 
       {/* 6. MODAL DO CLUBE — montado só quando aberto */}
-      {clubOpen && (
-        <Carrossel onClose={() => setClubOpen(false)} />
-      )}
-
+      {clubOpen && <Carrossel onClose={() => setClubOpen(false)} />}
     </>
   );
 }

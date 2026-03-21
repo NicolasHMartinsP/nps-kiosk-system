@@ -1,0 +1,46 @@
+.separador {
+  background: #000;
+  padding-top: 4px;
+}
+
+.carrosselWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.saibaMaisFaixa {
+  background: #000;
+  display: flex;
+  justify-content: center;
+  padding: 12px 0 16px;
+  min-height: 56px;
+}
+
+.saibaMaisBtn {
+  padding: 10px 32px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #1a1a1a;
+  background: #fff;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.2s;
+}
+.saibaMaisBtn:hover {
+  transform: scale(1.04);
+}
+@media (min-width: 768px) {
+  .saibaMaisBtn {
+    padding: 12px 40px;
+    font-size: 1rem;
+  }
+}
+@media (min-width: 1024px) {
+  .saibaMaisBtn {
+    padding: 13px 48px;
+    font-size: 1.05rem;
+  }
+}

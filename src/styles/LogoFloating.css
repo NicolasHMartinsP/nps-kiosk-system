@@ -1,0 +1,23 @@
+.logo-floating {
+  position: fixed;
+  top: 20px;
+  left: 14px;
+  width: 44px;
+  cursor: pointer;
+  z-index: 1000;
+  will-change: transform;
+}
+@media (min-width: 768px) {
+  .logo-floating {
+    top: 26px;
+    left: 18px;
+    width: 54px;
+  }
+}
+@media (min-width: 1024px) {
+  .logo-floating {
+    top: 30px;
+    left: 24px;
+    width: 64px;
+  }
+}

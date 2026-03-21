@@ -1,17 +1,32 @@
-/* Modal.jsx — Formulário de avaliação (notas 1–5 + texto). Documentação: README.md → Componentes → Modal.jsx */
-
+import "../styles/Modal.css";
 import { useState } from "react";
-import { db } from "./firebase";
+import { db } from "../firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 function Modal({ onClose, cidade }) {
-
   /* Perguntas definidas como dados — adicionar uma nova não requer mudança na lógica */
   const Questions = [
-    { id: "Pergunta1", texto: "Nossa equipe prestou um atendimento de qualidade?",        tipo: "Nota"  },
-    { id: "Pergunta2", texto: "O nosso espaço estava limpo e organizado?",                tipo: "Nota"  },
-    { id: "Pergunta3", texto: "O buffet estava abastecido e com variedade de opções?",    tipo: "Nota"  },
-    { id: "Observacao", texto: "Deixe aqui sua observação ou sugestão para melhorarmos ainda mais!", tipo: "texto" },
+    {
+      id: "Pergunta1",
+      texto: "Nossa equipe prestou um atendimento de qualidade?",
+      tipo: "Nota",
+    },
+    {
+      id: "Pergunta2",
+      texto: "O nosso espaço estava limpo e organizado?",
+      tipo: "Nota",
+    },
+    {
+      id: "Pergunta3",
+      texto: "O buffet estava abastecido e com variedade de opções?",
+      tipo: "Nota",
+    },
+    {
+      id: "Observacao",
+      texto:
+        "Deixe aqui sua observação ou sugestão para melhorarmos ainda mais!",
+      tipo: "texto",
+    },
   ];
 
   /* Estado inicial gerado automaticamente a partir do array de perguntas */
@@ -21,26 +36,36 @@ function Modal({ onClose, cidade }) {
   }, {});
 
   const [question, setQuestion] = useState(0);
-  const [finish,   setFinish]   = useState(false);
-  const [answers,  setAnswers]  = useState(initialAnswers);
+  const [finish, setFinish] = useState(false);
+  const [answers, setAnswers] = useState(initialAnswers);
 
-  const next  = () => { if (question < Questions.length - 1) setQuestion(question + 1); };
-  const prev  = () => { if (question > 0) setQuestion(question - 1); };
-  const handleCancel = () => { if (typeof onClose === "function") onClose(); };
+  const next = () => {
+    if (question < Questions.length - 1) setQuestion(question + 1);
+  };
+  const prev = () => {
+    if (question > 0) setQuestion(question - 1);
+  };
+  const handleCancel = () => {
+    if (typeof onClose === "function") onClose();
+  };
   const handleAnswer = (value) => {
     const id = Questions[question].id;
     setAnswers((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleSubmit = async () => {
-    const notas = Questions.filter((q) => q.tipo === "Nota").map((q) => answers[q.id]);
+    const notas = Questions.filter((q) => q.tipo === "Nota").map(
+      (q) => answers[q.id],
+    );
     const media = notas.reduce((a, b) => a + b, 0) / notas.length;
 
     const data = {
       ...answers,
       media,
       horario: serverTimestamp(),
-      dia: new Date().toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" }),
+      dia: new Date().toLocaleDateString("sv-SE", {
+        timeZone: "America/Sao_Paulo",
+      }),
       cidade,
     };
 
@@ -56,7 +81,6 @@ function Modal({ onClose, cidade }) {
   return (
     <div className="ModalOverlay">
       <div className="modalContainer">
-
         {/* Tela de confirmação após envio */}
         {finish ? (
           <div className="finishContainer">
@@ -68,8 +92,12 @@ function Modal({ onClose, cidade }) {
           <>
             {/* Cabeçalho: botão X + contador de progresso */}
             <div className="modalHeader">
-              <button className="closeBtn" onClick={handleCancel}>X</button>
-              <span>{question + 1}/{Questions.length}</span>
+              <button className="closeBtn" onClick={handleCancel}>
+                X
+              </button>
+              <span>
+                {question + 1}/{Questions.length}
+              </span>
             </div>
 
             {/* Texto da pergunta atual */}
@@ -98,7 +126,12 @@ function Modal({ onClose, cidade }) {
                 <textarea
                   placeholder="Digite sua sugestão..."
                   value={answers.Observacao}
-                  onChange={(e) => setAnswers((prev) => ({ ...prev, Observacao: e.target.value }))}
+                  onChange={(e) =>
+                    setAnswers((prev) => ({
+                      ...prev,
+                      Observacao: e.target.value,
+                    }))
+                  }
                 />
               </div>
             )}
@@ -107,21 +140,27 @@ function Modal({ onClose, cidade }) {
             <div className="navigation">
               <div className="navLeft">
                 {question > 0 && (
-                  <button className="voltarBtn" onClick={prev}>Voltar</button>
+                  <button className="voltarBtn" onClick={prev}>
+                    Voltar
+                  </button>
                 )}
               </div>
               <div className="navRight">
-                {question < Questions.length - 1 && answers[Questions[question].id] && (
-                  <button className="nextBtn" onClick={next}>Avançar</button>
-                )}
+                {question < Questions.length - 1 &&
+                  answers[Questions[question].id] && (
+                    <button className="nextBtn" onClick={next}>
+                      Avançar
+                    </button>
+                  )}
                 {question === Questions.length - 1 && (
-                  <button className="submitBtn" onClick={handleSubmit}>Enviar</button>
+                  <button className="submitBtn" onClick={handleSubmit}>
+                    Enviar
+                  </button>
                 )}
               </div>
             </div>
           </>
         )}
-
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
-/* CampanhaModal.jsx — Modal fullscreen de campanha (imagens e vídeos). Documentação: README.md → Componentes → CampanhaModal.jsx */
-
+import "../styles/CampanhaModal.css";
 export default function CampanhaModal({
   openCampaign,
   campaignInuse,
@@ -12,7 +11,6 @@ export default function CampanhaModal({
   onTouchMove,
   onTouchEnd,
 }) {
-
   if (!openCampaign || !campaignInuse) return null;
 
   return (
@@ -23,10 +21,11 @@ export default function CampanhaModal({
       onTouchEnd={onTouchEnd}
     >
       {/* Botão fechar */}
-      <button onClick={onClose} className="campaignCloseBtn">✕</button>
+      <button onClick={onClose} className="campaignCloseBtn">
+        ✕
+      </button>
 
       <div className="w-full h-full overflow-hidden">
-
         {/* Track: translateX move qual slide está visível */}
         <div
           className="flex h-full transition-transform duration-500"
@@ -38,19 +37,31 @@ export default function CampanhaModal({
               {item.src.endsWith(".mp4") ? (
                 <video
                   src={item.src}
-                  autoPlay loop muted playsInline preload="auto"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="auto"
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <img src={item.src} alt={item.alt} className="w-full h-full object-contain" />
+                <img
+                  src={item.src}
+                  alt={item.alt}
+                  className="w-full h-full object-contain"
+                />
               )}
             </div>
           ))}
         </div>
 
         {/* Setas — reutilizam .arrowBtn do App.css */}
-        <button onClick={onPrev} className="arrowBtn arrowBtn--left">‹</button>
-        <button onClick={onNext} className="arrowBtn arrowBtn--right">›</button>
+        <button onClick={onPrev} className="arrowBtn arrowBtn--left">
+          ‹
+        </button>
+        <button onClick={onNext} className="arrowBtn arrowBtn--right">
+          ›
+        </button>
 
         {/* Dots */}
         <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
@@ -62,7 +73,6 @@ export default function CampanhaModal({
             />
           ))}
         </div>
-
       </div>
     </div>
   );

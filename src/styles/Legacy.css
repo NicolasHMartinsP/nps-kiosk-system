@@ -1,0 +1,70 @@
+#titleSearch {
+  padding-top: 30px;
+  font-size: 32px;
+  text-align: center;
+  color: white;
+  line-height: 1.5;
+}
+@media (min-width: 768px) {
+  #titleSearch {
+    padding-top: 24px;
+    font-size: 48px;
+  }
+}
+@media (min-width: 1024px) {
+  #titleSearch {
+    padding-top: 20px;
+    font-size: 62px;
+    max-width: 1100px;
+  }
+}
+
+/* Imagem principal*/
+#Pamonha {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  height: auto;
+}
+@media (min-width: 768px) {
+  #Pamonha {
+    max-width: 860px;
+  }
+}
+@media (min-width: 1024px) {
+  #Pamonha {
+    aspect-ratio: 16 / 7;
+    max-width: 1100px;
+  }
+}
+
+/* Container de botões*/
+#containerBotão {
+  max-width: 100%;
+}
+@media (min-width: 768px) {
+  #containerBotão {
+    max-width: 900px;
+  }
+}
+@media (min-width: 1024px) {
+  #containerBotão {
+    max-width: 1280px;
+  }
+}
+
+/* Modal*/
+#modal {
+  display: flex;
+  padding: 40px 20px;
+  background: #ffae00;
+}
+@media (min-width: 768px) {
+  #modal {
+    padding: 50px 40px;
+  }
+}
+@media (min-width: 1024px) {
+  #modal {
+    padding: 70px 100px;
+  }
+}
