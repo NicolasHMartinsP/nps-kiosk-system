@@ -19,6 +19,7 @@ Cada loja recebe um link único com `?cidade=nome` — sem login, sem complexida
 - [Regras de performance](#regras-de-performance)
 - [Firestore](#firestore)
 - [Deploy](#deploy)
+- [Histórico de decisões](#histórico-de-decisões-relevantes)
 
 ---
 
@@ -34,7 +35,7 @@ O cliente entra na página da loja, vê o carrossel de campanhas, clica em **Ava
 |---|---|
 | React + Vite | Interface e bundler |
 | Tailwind CSS | Classes utilitárias de layout |
-| App.css | Estilos customizados, animações e modal |
+| CSS modular por componente | Estilos customizados, animações e modal |
 | Firebase Firestore | Banco de dados das avaliações |
 | qrcode.react | QR Codes do Clube The Best |
 
@@ -44,25 +45,38 @@ O cliente entra na página da loja, vê o carrossel de campanhas, clica em **Ava
 
 ```
 src/
-├── App.jsx              → orquestrador principal
-├── App.css              → estilos globais e animações
-├── main.jsx             → ponto de entrada (importa App.css)
 │
-├── campaignData.js      → dados estáticos: slides e campanhas
+├── components/              → todos os componentes JSX
+│   ├── App.jsx              → orquestrador principal
+│   ├── CarrosselHero.jsx    → carrossel de imagens do hero
+│   ├── CampanhaModal.jsx    → modal fullscreen de campanha
+│   ├── Modal.jsx            → modal de avaliação (notas 1–5)
+│   ├── carrossel.jsx        → modal do Clube The Best
+│   └── LogoFloating.jsx     → logo fixo com scroll to top
 │
-├── useCarrossel.js      → hook: lógica do carrossel hero
-├── useCampanha.js       → hook: lógica do modal de campanha
+├── hooks/                   → lógica pura sem JSX
+│   ├── useCarrossel.js      → estado e navegação do carrossel hero
+│   └── useCampanha.js       → estado e navegação do modal de campanha
 │
-├── LogoFloating.jsx     → logo fixo com scroll to top
-├── CarrosselHero.jsx    → carrossel de imagens do hero
-├── CampanhaModal.jsx    → modal fullscreen de campanha
-├── Modal.jsx            → modal de avaliação (notas 1–5)
-├── carrossel.jsx        → modal do Clube The Best
+├── data/                    → dados estáticos
+│   └── campaignData.js      → slides do hero e campanhas
 │
-├── firebase.js          → configuração do Firebase
-└── assets/
-    ├── img/             → imagens e vídeos
-    └── Fonts/           → fontes OTF customizadas
+├── styles/                  → CSS separado por componente
+│   ├── base.css             → Tailwind, animações, fontes, reset, .arrowBtn
+│   ├── Hero.css             → seção hero
+│   ├── LogoFloating.css     → logo fixo
+│   ├── CarrosselHero.css    → carrossel e faixa saiba mais
+│   ├── Buttons.css          → botões animados e específicos
+│   ├── CampanhaModal.css    → botão fechar da campanha
+│   ├── Modal.css            → modal de avaliação completo
+│   └── Legacy.css           → classes antigas mantidas por compatibilidade
+│
+├── assets/
+│   ├── img/                 → imagens e vídeos
+│   └── Fonts/               → fontes OTF customizadas
+│
+├── firebase.js              → configuração do Firebase
+└── main.jsx                 → ponto de entrada (importa base.css e App)
 ```
 
 ---
@@ -85,6 +99,8 @@ npm run preview
 
 > **Dica:** durante o desenvolvimento, abra o DevTools (`F12`) → aba Network → marque **Disable cache** para garantir que as alterações apareçam sem precisar forçar recarregamento.
 
+> **Aviso no VS Code:** as diretivas `@tailwind` no `base.css` podem aparecer sublinhadas como "unknown at-rule". Isso é só o linter do VS Code não reconhecendo a sintaxe do Tailwind — instale a extensão **Tailwind CSS IntelliSense** para resolver. Não afeta o funcionamento do projeto.
+
 ---
 
 ## Arquitetura
@@ -92,11 +108,12 @@ npm run preview
 ### Fluxo de dados
 
 ```
-App.jsx
-  ├── useCarrossel(images)     → estado e navegação do carrossel hero
-  ├── useCampanha(...)         → estado e navegação do modal de campanha
-  ├── useState(modalOpen)      → controla abertura do modal de avaliação
-  └── useState(clubOpen)       → controla abertura do modal do clube
+main.jsx
+  └── App.jsx
+        ├── useCarrossel(images)     → estado e navegação do carrossel hero
+        ├── useCampanha(...)         → estado e navegação do modal de campanha
+        ├── useState(modalOpen)      → controla abertura do modal de avaliação
+        └── useState(clubOpen)       → controla abertura do modal do clube
 ```
 
 ### Ordem de renderização na página
@@ -109,6 +126,31 @@ App.jsx
 | 4 | Seção Clube | Banner com botão "Clique aqui e saiba mais!" |
 | 5 | Modal | Avaliação — montado só quando `modalOpen === true` |
 | 6 | Carrossel | Clube — montado só quando `clubOpen === true` |
+
+### Como os imports de CSS funcionam
+
+CSS não tem export/import entre arquivos como o JavaScript. O que liga o CSS ao componente é um import no topo do JSX:
+
+```js
+import "../styles/Modal.css";
+```
+
+O Vite lê o import, injeta o CSS na página e as classes ficam disponíveis globalmente. Cada componente importa apenas o CSS que precisa. O `base.css` é a exceção — importado só no `main.jsx` porque contém estilos globais que valem para toda a aplicação.
+
+### Caminhos de import por pasta
+
+Como os componentes ficam em `src/components/`, os imports de fora dessa pasta usam `../` para subir um nível:
+
+```js
+// de dentro de components/ para outras pastas
+import { useCarrossel } from "../hooks/useCarrossel";
+import { images }       from "../data/campaignData";
+import imgClube         from "../assets/img/Club/STORY5.png";
+import "../styles/Hero.css";
+
+// entre componentes da mesma pasta — caminho direto
+import Modal from "./Modal";
+```
 
 ### Identificação da franquia por URL
 
@@ -125,9 +167,21 @@ O `App.jsx` lê esse parâmetro via `URLSearchParams` e passa para o `Modal.jsx`
 
 ## Componentes
 
+Todos os componentes ficam em `src/components/`.
+
+---
+
 ### `App.jsx` — Orquestrador principal
 
 Responsabilidade única: montar a página conectando componentes, hooks e estado. Não contém lógica de carrossel, swipe, campanha nem animação.
+
+**CSS importado:**
+```js
+import "../styles/base.css";
+import "../styles/Hero.css";
+import "../styles/Buttons.css";
+import "../styles/Legacy.css";
+```
 
 **Estado local:**
 - `modalOpen` → boolean que controla o modal de avaliação
@@ -141,6 +195,8 @@ Diferente dos outros modais, o `CampanhaModal` precisa manter o estado de slide 
 ### `CarrosselHero.jsx` — Carrossel do hero
 
 Componente puramente visual — não tem estado próprio. Recebe tudo via props do hook `useCarrossel`.
+
+**CSS importado:** `../styles/CarrosselHero.css`
 
 **Props:**
 
@@ -164,6 +220,8 @@ O track (`div` com todos os slides lado a lado) é movido via `translateX(-${cur
 
 Exibe as mídias (imagens e vídeos `.mp4`) de uma campanha específica. Detecta o tipo de mídia pela extensão do arquivo: `.mp4` → `<video>`, qualquer outro → `<img>`.
 
+**CSS importado:** `../styles/CampanhaModal.css`
+
 **Props:**
 
 | Prop | Tipo | Descrição |
@@ -181,6 +239,8 @@ Exibe as mídias (imagens e vídeos `.mp4`) de uma campanha específica. Detecta
 ### `Modal.jsx` — Modal de avaliação
 
 Formulário multi-etapa com 3 perguntas de nota (1–5) e 1 campo de texto livre. As perguntas são definidas no array `Questions` — adicionar uma nova pergunta não requer mudança na lógica.
+
+**CSS importado:** `../styles/Modal.css`
 
 **Estados internos:**
 - `question` → índice da pergunta atual
@@ -201,7 +261,7 @@ O array `Questions` define id, texto e tipo de cada pergunta. O estado `answers`
 
 ### `carrossel.jsx` — Modal do Clube The Best
 
-Modal fullscreen com as imagens do Clube. Exibe QR Codes para download do app no primeiro slide.
+Modal fullscreen com as imagens do Clube. Exibe QR Codes para download do app no primeiro slide. Não tem CSS próprio — usa `.arrowBtn` e `.swipe-hint` que vêm do `base.css`.
 
 **Como funciona a animação de transição:**
 Todas as imagens são renderizadas sobrepostas com `position: absolute`. A imagem ativa recebe `opacity: 1` e `translateX(0)`. As demais recebem `opacity: 0` e um deslocamento lateral de 60px. A transição CSS (`0.4s ease`) anima suavemente entre os estados.
@@ -225,9 +285,15 @@ A direção do deslocamento depende do sentido de navegação:
 
 Logo fixo no canto superior esquerdo via `position: fixed` no CSS (classe `.logo-floating`). Ao clicar, chama `window.scrollTo({ top: 0, behavior: "smooth" })` para voltar ao topo suavemente.
 
+**CSS importado:** `../styles/LogoFloating.css`
+
 ---
 
 ## Hooks
+
+Ficam em `src/hooks/`. São funções JavaScript puras — sem JSX, sem visual. Toda lógica de estado e efeitos colaterais do carrossel e da campanha vive aqui, mantendo os componentes limpos.
+
+---
 
 ### `useCarrossel.js`
 
@@ -280,7 +346,7 @@ const campanha = useCampanha(images, carrossel.currentIndex, campaignMap);
 
 ### `campaignData.js`
 
-Fonte única de verdade para os slides do hero e as campanhas. Separado dos componentes para não recriar os dados a cada render e facilitar manutenção.
+Fica em `src/data/`. Fonte única de verdade para os slides do hero e as campanhas. Separado dos componentes para não recriar os dados a cada render e facilitar manutenção.
 
 **`images`** — array de slides do carrossel hero:
 ```js
@@ -306,25 +372,32 @@ Fonte única de verdade para os slides do hero e as campanhas. Separado dos comp
 
 ## Estilos
 
-### `App.css` — Índice de seções
+Ficam em `src/styles/`. O CSS foi separado por componente — cada arquivo cuida de um pedaço da interface. Isso facilita encontrar e editar estilos sem precisar rolar centenas de linhas.
 
-| # | Seção | Classes principais |
+### Mapa de arquivos CSS
+
+| Arquivo | Importado em | O que contém |
 |---|---|---|
-| 1 | Tailwind | `@tailwind base/components/utilities` |
-| 2 | Animações | `swipeHint`, `modalUp`, `pulseScale`, `glowPulse` |
-| 3 | Fontes | `textgyreschola`, `novabold` |
-| 4 | Reset | `*`, `body` |
-| 5 | Logo flutuante | `.logo-floating` |
-| 6 | Hero | `.Hover`, `.heroText`, `.heroTagline`, `.heroTitle`, `.highlight` |
-| 7 | Carrossel hero | `.separador`, `.carrosselWrapper` |
-| 8 | Setas | `.arrowBtn`, `.arrowBtn--left`, `.arrowBtn--right` |
-| 9 | Faixa saiba mais | `.saibaMaisFaixa`, `.saibaMaisBtn` |
-| 10 | Botões animados | `.glowButton`, `.pulseScale` |
-| 11 | Botões específicos | `.avaliarBtn`, `.clubeBtn` |
-| 12 | Modal campanha | `.campaignCloseBtn` |
-| 13 | Modal avaliação overlay | `.ModalOverlay`, `.modalContainer` |
-| 14 | Modal avaliação conteúdo | `.modalHeader`, `.closeBtn`, `.modalQuestion`, `.avaliacao`, `.nota`, `.nota-1` a `.nota-5`, `.selecionado`, `.observacao`, `.navigation`, `.voltarBtn`, `.nextBtn`, `.submitBtn`, `.finishContainer`, `.checkIcon`, `.swipe-hint` |
-| 15 | Legado | `#titleSearch`, `#Pamonha`, `#containerBotão`, `#modal` |
+| `base.css` | `main.jsx` | Tailwind, `@keyframes`, `@font-face`, reset, `.arrowBtn` |
+| `Hero.css` | `App.jsx` | `.Hover`, `.heroText`, `.heroTagline`, `.heroTitle`, `.highlight`, `.linhabaixa` |
+| `Buttons.css` | `App.jsx` | `.glowButton`, `.pulseScale`, `.avaliarBtn`, `.clubeBtn` |
+| `Legacy.css` | `App.jsx` | `#titleSearch`, `#Pamonha`, `#containerBotão`, `#modal` |
+| `LogoFloating.css` | `LogoFloating.jsx` | `.logo-floating` |
+| `CarrosselHero.css` | `CarrosselHero.jsx` | `.separador`, `.carrosselWrapper`, `.saibaMaisFaixa`, `.saibaMaisBtn` |
+| `CampanhaModal.css` | `CampanhaModal.jsx` | `.campaignCloseBtn` |
+| `Modal.css` | `Modal.jsx` | `.ModalOverlay`, `.modalContainer`, `.modalHeader`, `.closeBtn`, `.modalQuestion`, `.avaliacao`, `.nota`, `.nota-1` a `.nota-5`, `.selecionado`, `.observacao`, `.navigation`, `.voltarBtn`, `.nextBtn`, `.submitBtn`, `.finishContainer`, `.checkIcon`, `.swipe-hint` |
+
+### Por que `.arrowBtn` fica no `base.css`?
+
+As setas são usadas em três componentes diferentes: `CarrosselHero`, `CampanhaModal` e `carrossel`. Colocar num arquivo de componente criaria dependência entre arquivos — um componente teria que importar o CSS de outro. Deixar no `base.css` resolve isso: como ele é importado pelo `main.jsx`, as classes ficam disponíveis para toda a aplicação.
+
+### Por que os caminhos de fonte usam `../`?
+
+O `base.css` fica dentro de `src/styles/`, mas as fontes ficam em `src/assets/Fonts/`. Por isso o caminho nos `@font-face` sobe um nível:
+
+```css
+src: url("../assets/Fonts/texgyreschola-regular.otf");
+```
 
 ### Breakpoints utilizados
 
@@ -405,7 +478,7 @@ Apenas a pasta `dist/` vai para o servidor de hospedagem.
 
 ## Classes legadas
 
-As classes abaixo existem no `App.css` por compatibilidade com versões anteriores. Não remover até confirmar que nenhum componente as referencia.
+As classes abaixo existem no `Legacy.css` por compatibilidade com versões anteriores. Não remover até confirmar que nenhum componente as referencia.
 
 | Classe/ID | Origem |
 |---|---|
@@ -417,5 +490,26 @@ As classes abaixo existem no `App.css` por compatibilidade com versões anterior
 Para remover com segurança, confirme que nenhum arquivo referencia a classe, delete e commite:
 
 ```bash
-git commit -m "chore: remove classes legadas do CSS"
+git commit -m "chore: remove classes legadas do Legacy.css"
 ```
+
+---
+
+## Histórico de decisões relevantes
+
+Decisões que podem parecer estranhas no futuro mas têm motivo:
+
+**Por que `carrossel.jsx` começa com letra minúscula?**
+Convenção do arquivo original mantida para não quebrar imports já existentes em produção.
+
+**Por que `CampanhaModal` fica sempre no DOM em vez de usar renderização condicional?**
+Precisa manter o estado de slide interno durante a animação de saída. Se desmontasse ao fechar, o slide voltaria ao zero antes da animação terminar.
+
+**Por que os botões de nota têm `user-select: none` e `-webkit-tap-highlight-color: transparent`?**
+Em mobile, tocar num botão pode selecionar o número como texto ou mostrar um flash azul/cinza do browser. Essas duas propriedades eliminam esses comportamentos indesejados.
+
+**Por que `useCampanha` recebe `currentIndex` como parâmetro em vez de ler do próprio hook?**
+Separação de responsabilidades: `useCarrossel` é dono do índice do hero. `useCampanha` só observa esse índice para saber qual campanha abrir — não faz sentido ele ter estado próprio para isso.
+
+**Por que o CSS foi separado por componente em vez de ficar num arquivo só?**
+O `App.css` original chegou a mais de 1200 linhas. Com arquivos separados, para editar o estilo do modal basta abrir o `Modal.css` — sem precisar procurar num arquivo gigante. Cada componente JSX importa apenas o CSS que precisa.
