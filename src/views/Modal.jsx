@@ -1,40 +1,37 @@
-import "../styles/Modal.css";
+import "./styles/Modal.css";
 import { useState } from "react";
-import { db } from "../firebase";
+import { db } from "../models/firebaseConfig";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
+const Questions = [
+  {
+    id: "Pergunta1",
+    texto: "Nossa equipe prestou um atendimento de qualidade?",
+    tipo: "Nota",
+  },
+  {
+    id: "Pergunta2",
+    texto: "O nosso espaço estava limpo e organizado?",
+    tipo: "Nota",
+  },
+  {
+    id: "Pergunta3",
+    texto: "O buffet estava abastecido e com variedade de opções?",
+    tipo: "Nota",
+  },
+  {
+    id: "Observacao",
+    texto: "Deixe aqui sua observação ou sugestão para melhorarmos ainda mais!",
+    tipo: "texto",
+  },
+];
+
+const initialAnswers = Questions.reduce((acc, q) => {
+  acc[q.id] = q.tipo === "texto" ? "" : null;
+  return acc;
+}, {});
+
 function Modal({ onClose, cidade }) {
-  /* Perguntas definidas como dados — adicionar uma nova não requer mudança na lógica */
-  const Questions = [
-    {
-      id: "Pergunta1",
-      texto: "Nossa equipe prestou um atendimento de qualidade?",
-      tipo: "Nota",
-    },
-    {
-      id: "Pergunta2",
-      texto: "O nosso espaço estava limpo e organizado?",
-      tipo: "Nota",
-    },
-    {
-      id: "Pergunta3",
-      texto: "O buffet estava abastecido e com variedade de opções?",
-      tipo: "Nota",
-    },
-    {
-      id: "Observacao",
-      texto:
-        "Deixe aqui sua observação ou sugestão para melhorarmos ainda mais!",
-      tipo: "texto",
-    },
-  ];
-
-  /* Estado inicial gerado automaticamente a partir do array de perguntas */
-  const initialAnswers = Questions.reduce((acc, q) => {
-    acc[q.id] = q.tipo === "texto" ? "" : null;
-    return acc;
-  }, {});
-
   const [question, setQuestion] = useState(0);
   const [finish, setFinish] = useState(false);
   const [answers, setAnswers] = useState(initialAnswers);
@@ -42,12 +39,15 @@ function Modal({ onClose, cidade }) {
   const next = () => {
     if (question < Questions.length - 1) setQuestion(question + 1);
   };
+  
   const prev = () => {
     if (question > 0) setQuestion(question - 1);
   };
+  
   const handleCancel = () => {
     if (typeof onClose === "function") onClose();
   };
+  
   const handleAnswer = (value) => {
     const id = Questions[question].id;
     setAnswers((prev) => ({ ...prev, [id]: value }));
@@ -57,7 +57,8 @@ function Modal({ onClose, cidade }) {
     const notas = Questions.filter((q) => q.tipo === "Nota").map(
       (q) => answers[q.id],
     );
-    const media = notas.reduce((a, b) => a + b, 0) / notas.length;
+    // Prevent division by zero if there are no 'Nota' questions
+    const media = notas.length > 0 ? notas.reduce((a, b) => a + b, 0) / notas.length : 0;
 
     const data = {
       ...answers,
@@ -81,7 +82,6 @@ function Modal({ onClose, cidade }) {
   return (
     <div className="ModalOverlay">
       <div className="modalContainer">
-        {/* Tela de confirmação após envio */}
         {finish ? (
           <div className="finishContainer">
             <div className="checkIcon">✓</div>
@@ -90,22 +90,15 @@ function Modal({ onClose, cidade }) {
           </div>
         ) : (
           <>
-            {/* Cabeçalho: botão X + contador de progresso */}
             <div className="modalHeader">
-              <button className="closeBtn" onClick={handleCancel}>
-                X
-              </button>
-              <span>
-                {question + 1}/{Questions.length}
-              </span>
+              <button className="closeBtn" onClick={handleCancel}>X</button>
+              <span>{question + 1}/{Questions.length}</span>
             </div>
 
-            {/* Texto da pergunta atual */}
             <div className="modalQuestion">
               <h1>{Questions[question].texto}</h1>
             </div>
 
-            {/* Botões de nota 1–5 */}
             {Questions[question].tipo === "Nota" && (
               <div className="avaliacao">
                 {[1, 2, 3, 4, 5].map((num) => (
@@ -120,7 +113,6 @@ function Modal({ onClose, cidade }) {
               </div>
             )}
 
-            {/* Campo de texto livre */}
             {Questions[question].tipo === "texto" && (
               <div className="observacao">
                 <textarea
@@ -136,26 +128,18 @@ function Modal({ onClose, cidade }) {
               </div>
             )}
 
-            {/* Navegação: Voltar / Avançar / Enviar */}
             <div className="navigation">
               <div className="navLeft">
                 {question > 0 && (
-                  <button className="voltarBtn" onClick={prev}>
-                    Voltar
-                  </button>
+                  <button className="voltarBtn" onClick={prev}>Voltar</button>
                 )}
               </div>
               <div className="navRight">
-                {question < Questions.length - 1 &&
-                  answers[Questions[question].id] && (
-                    <button className="nextBtn" onClick={next}>
-                      Avançar
-                    </button>
-                  )}
+                {question < Questions.length - 1 && answers[Questions[question].id] && (
+                  <button className="nextBtn" onClick={next}>Avançar</button>
+                )}
                 {question === Questions.length - 1 && (
-                  <button className="submitBtn" onClick={handleSubmit}>
-                    Enviar
-                  </button>
+                  <button className="submitBtn" onClick={handleSubmit}>Enviar</button>
                 )}
               </div>
             </div>

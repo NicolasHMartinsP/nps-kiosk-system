@@ -1,7 +1,8 @@
-/* carrossel.jsx — Modal do Clube The Best. Documentação: README.md → Componentes → carrossel.jsx */
+/* CarrosselClube.jsx — Modal do Clube The Best. */
 
 import { useEffect, useState } from "react";
 import { QRCodeCanvas } from "qrcode.react";
+import { useSwipe } from "../controllers/useSwipe";
 import imgClub1 from "../assets/img/Club/club1.png";
 import imgClub2 from "../assets/img/Club/Club2.png";
 import imgClub3 from "../assets/img/Club/Club3.png";
@@ -9,12 +10,12 @@ import imgClub4 from "../assets/img/Club/Club4.png";
 
 const clubImages = [imgClub1, imgClub2, imgClub3, imgClub4];
 
-function Carrossel({ onClose }) {
+function CarrosselClube({ onClose }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState("left");
   const [isAnimating, setIsAnimating] = useState(false);
+  const [swipeHintVisible, setSwipeHintVisible] = useState(true);
 
-  /* Troca de slide com direção e bloqueio durante animação (400ms) */
   const changeSlide = (newIndex, dir) => {
     if (isAnimating) return;
     setDirection(dir);
@@ -23,16 +24,22 @@ function Carrossel({ onClose }) {
     setTimeout(() => setIsAnimating(false), 400);
   };
 
-  const next = () =>
+  const next = () => {
+    setSwipeHintVisible(false);
     changeSlide(
       currentIndex === clubImages.length - 1 ? 0 : currentIndex + 1,
-      "left",
+      "left"
     );
-  const prev = () =>
+  };
+  
+  const prev = () => {
+    setSwipeHintVisible(false);
     changeSlide(
       currentIndex === 0 ? clubImages.length - 1 : currentIndex - 1,
-      "right",
+      "right"
     );
+  };
+  
   const goTo = (index) => {
     if (index === currentIndex) return;
     changeSlide(index, index > currentIndex ? "left" : "right");
@@ -47,31 +54,12 @@ function Carrossel({ onClose }) {
     };
   }, []);
 
-  /* Swipe — distância mínima de 50px para trocar slide */
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-  const [swipeHintVisible, setSwipeHintVisible] = useState(true);
-  const minSwipeDistance = 50;
+  /* Swipe using custom hook */
+  const swipeHandlers = useSwipe({
+    onSwipeLeft: next,
+    onSwipeRight: prev,
+  });
 
-  const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    if (distance > minSwipeDistance) {
-      setSwipeHintVisible(false);
-      next();
-    }
-    if (distance < -minSwipeDistance) {
-      setSwipeHintVisible(false);
-      prev();
-    }
-  };
-
-  /* Estilos de transição: fade + slide lateral via transform e opacity */
   const imageStyle = (isActive) => ({
     position: "absolute",
     inset: 0,
@@ -91,12 +79,9 @@ function Carrossel({ onClose }) {
   return (
     <div
       className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur"
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
+      {...swipeHandlers}
     >
       <div className="relative w-full h-full overflow-hidden">
-        {/* Todas as imagens sobrepostas — a ativa aparece via opacity/transform */}
         {clubImages.map((img, index) => (
           <img
             key={index}
@@ -106,7 +91,6 @@ function Carrossel({ onClose }) {
           />
         ))}
 
-        {/* Botão voltar */}
         <button
           onClick={onClose}
           className="absolute top-6 left-6 z-30 bg-[#feb32b] hover:scale-105 transition-transform duration-300 rounded-xl px-6 py-3 shadow-lg"
@@ -114,7 +98,6 @@ function Carrossel({ onClose }) {
           Voltar ao início
         </button>
 
-        {/* Setas — reutilizam .arrowBtn do App.css */}
         <button
           onClick={prev}
           disabled={isAnimating}
@@ -132,7 +115,6 @@ function Carrossel({ onClose }) {
           ›
         </button>
 
-        {/* Dots — sobem quando o slide 0 exibe os QR codes */}
         <div
           className="absolute w-full flex justify-center gap-2 z-30"
           style={{ bottom: currentIndex === 0 ? "220px" : "24px" }}
@@ -158,7 +140,6 @@ function Carrossel({ onClose }) {
           ))}
         </div>
 
-        {/* Conteúdo exclusivo do slide 0: dica de swipe + QR codes */}
         {currentIndex === 0 && (
           <>
             {swipeHintVisible && (
@@ -190,4 +171,4 @@ function Carrossel({ onClose }) {
   );
 }
 
-export default Carrossel;
+export default CarrosselClube;

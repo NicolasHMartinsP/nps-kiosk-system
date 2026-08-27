@@ -1,5 +1,5 @@
 /* CarrosselHero.jsx — Carrossel do hero + faixa "Saiba mais". Documentação: README.md → Componentes → CarrosselHero.jsx */
-import "../styles/CarrosselHero.css";
+import "./styles/CarrosselHero.css";
 export default function CarrosselHero({
   images,
   currentIndex,

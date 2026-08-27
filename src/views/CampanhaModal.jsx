@@ -1,4 +1,4 @@
-import "../styles/CampanhaModal.css";
+import "./styles/CampanhaModal.css";
 export default function CampanhaModal({
   openCampaign,
   campaignInuse,

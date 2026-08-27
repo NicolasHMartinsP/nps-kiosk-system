@@ -1,24 +1,22 @@
-/* App.jsx — Orquestrador principal. Documentação: README.md → Componentes → App.jsx */
+/* App.jsx — Orquestrador principal. Documentação: docs/1-ARCHITECTURE.md */
 
 import { useState } from "react";
-import "../styles/base.css";
-import "../styles/Hero.css";
-import "../styles/Buttons.css";
-import "../styles/Legacy.css";
+import "./styles/base.css";
+import "./styles/Hero.css";
+import "./styles/Buttons.css";
 import LogoFloating from "./LogoFloating";
 import CarrosselHero from "./CarrosselHero";
 import CampanhaModal from "./CampanhaModal";
 import Modal from "./Modal";
-import Carrossel from "./carrossel";
+import CarrosselClube from "./CarrosselClube";
 import imgClube from "../assets/img/Club/STORY5.png";
-import { images, campaignMap } from "../data/campaignData";
-import { useCarrossel } from "../hooks/useCarrossel";
-import { useCampanha } from "../hooks/useCampanha";
+import { images, campaignMap } from "../models/campaignModel";
+import { useCarrossel } from "../controllers/useCarrossel";
+import { useCampanha } from "../controllers/useCampanha";
 
 function App() {
   /* Lê ?cidade= da URL para identificar a franquia no Firestore */
-  const cidade =
-    new URLSearchParams(window.location.search).get("cidade") || "desconhecida";
+  const cidade = new URLSearchParams(window.location.search).get("cidade") || "desconhecida";
 
   const carrossel = useCarrossel(images);
   const campanha = useCampanha(images, carrossel.currentIndex, campaignMap);
@@ -94,7 +92,7 @@ function App() {
       )}
 
       {/* 6. MODAL DO CLUBE — montado só quando aberto */}
-      {clubOpen && <Carrossel onClose={() => setClubOpen(false)} />}
+      {clubOpen && <CarrosselClube onClose={() => setClubOpen(false)} />}
     </>
   );
 }

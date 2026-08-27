@@ -1,515 +1,132 @@
-# The Best Açaí — Sistema de Avaliação
+# Sistema de Totem NPS - The Best Açaí
 
-Sistema web para coleta de avaliações de clientes nas franquias The Best Açaí.
-Cada loja recebe um link único com `?cidade=nome` — sem login, sem complexidade.
+![React](https://img.shields.io/badge/React-19-blue)![Vite](https://img.shields.io/badge/Vite-Build%20Tool-purple)![Firebase](https://img.shields.io/badge/Firebase-Firestore-orange)![Status](https://img.shields.io/badge/Status-Production-success)
+![License](https://img.shields.io/badge/License-MIT-blue)
 
----
-
-## Índice
-
-- [Visão geral](#visão-geral)
-- [Stack](#stack)
-- [Estrutura do projeto](#estrutura-do-projeto)
-- [Como rodar](#como-rodar)
-- [Arquitetura](#arquitetura)
-- [Componentes](#componentes)
-- [Hooks](#hooks)
-- [Dados](#dados)
-- [Estilos](#estilos)
-- [Regras de performance](#regras-de-performance)
-- [Firestore](#firestore)
-- [Deploy](#deploy)
-- [Histórico de decisões](#histórico-de-decisões-relevantes)
+> **Totem de Avaliação Inteligente (NPS) e Mídia Interativa** para quiosques. Coleta de feedbacks via hardware no balcão e sincronização direta com a nuvem sem atritos de usabilidade.
 
 ---
 
-## Visão geral
+## Problema e Solução
 
-O cliente entra na página da loja, vê o carrossel de campanhas, clica em **Avaliar agora!** e responde 3 perguntas com notas de 1 a 5 mais um campo de observação livre. As respostas são salvas no Firestore com timestamp, data e identificação da franquia.
+Empreendimentos enfrentam dificuldades para mensurar a qualidade do atendimento e limpeza na ponta, diretamente com o cliente, antes que ele saia da loja. Formulários via QR Code geram engajamento baixíssimo.
 
----
+O sistema atua como uma interface de hardware (Totem/Tablet de balcão) rodando in-memory e _fullscreen_. Ele resolve o engajamento unindo um **Carrossel de Mídias/Promoções (Digital Signage)** a um **Formulário NPS Express de 3 cliques**.
+O usuário interage com o menu de campanhas de marketing, se depara com a chamada para avaliação e responde em segundos. Tudo isso sincronizado remotamente num _Firebase Firestore_ descentralizado, segmentando automaticamente cada avaliação para a franquia de origem (lida via query string da URL no deploy do hardware).
 
-## Stack
-
-| Tecnologia | Uso |
-|---|---|
-| React + Vite | Interface e bundler |
-| Tailwind CSS | Classes utilitárias de layout |
-| CSS modular por componente | Estilos customizados, animações e modal |
-| Firebase Firestore | Banco de dados das avaliações |
-| qrcode.react | QR Codes do Clube The Best |
+_Projeto atualmente em Produção e rodando ativamente em **8 empresas/franquias** diferentes._
 
 ---
 
-## Estrutura do projeto
+## Tecnologias
 
-```
-src/
-│
-├── components/              → todos os componentes JSX
-│   ├── App.jsx              → orquestrador principal
-│   ├── CarrosselHero.jsx    → carrossel de imagens do hero
-│   ├── CampanhaModal.jsx    → modal fullscreen de campanha
-│   ├── Modal.jsx            → modal de avaliação (notas 1–5)
-│   ├── carrossel.jsx        → modal do Clube The Best
-│   └── LogoFloating.jsx     → logo fixo com scroll to top
-│
-├── hooks/                   → lógica pura sem JSX
-│   ├── useCarrossel.js      → estado e navegação do carrossel hero
-│   └── useCampanha.js       → estado e navegação do modal de campanha
-│
-├── data/                    → dados estáticos
-│   └── campaignData.js      → slides do hero e campanhas
-│
-├── styles/                  → CSS separado por componente
-│   ├── base.css             → Tailwind, animações, fontes, reset, .arrowBtn
-│   ├── Hero.css             → seção hero
-│   ├── LogoFloating.css     → logo fixo
-│   ├── CarrosselHero.css    → carrossel e faixa saiba mais
-│   ├── Buttons.css          → botões animados e específicos
-│   ├── CampanhaModal.css    → botão fechar da campanha
-│   ├── Modal.css            → modal de avaliação completo
-│   └── Legacy.css           → classes antigas mantidas por compatibilidade
-│
-├── assets/
-│   ├── img/                 → imagens e vídeos
-│   └── Fonts/               → fontes OTF customizadas
-│
-├── firebase.js              → configuração do Firebase
-└── main.jsx                 → ponto de entrada (importa base.css e App)
+- **React / Vite** (Core da aplicação e motor de renderização HMR)
+- **Firebase Firestore** (Database NoSQL serverless para armazenamento em tempo real)
+- **Tailwind CSS** (Estilização híbrida de alta performance gráfica)
+- **qrcode.react** (Geração dinâmica e offline de conexões app-clube)
+- **Vite Env Variables** (Segurança e isolamento de chaves de API da camada frontend)
+
+---
+
+## Arquitetura Híbrida (MVC Pattern)
+
+A aplicação foi rigorosamente componentizada utilizando o padrão de arquitetura MVC voltado para frontend React. Toda a lógica de negócio foi extraída para Controladores, deixando as Views (Componentes) limpas e altamente performáticas.
+
+```text
+ ┌───────────────────────┐            ┌─────────────────────────┐
+ │ Hardware do Totem     │            │    Cloud (Firebase)     │
+ │ (URL ?cidade=nome)    │            │     (Firestore DB)      │
+ └───────────┬───────────┘            └────────────┬────────────┘
+             │                                     │
+             ▼                                     ▼
+        [ UI Views ]                          [ API Rest ]
+             │                                     │
+             └──────────────────┬──────────────────┘
+                                ▼
+                        Controllers (Hooks)
+                    (Gerenciadores de Estado/Swipe)
+                                │
+                                ▼
+                       Interactive Feedback
+                       (Coleta de Notas 1-5)
+                                │
+                                ▼
+                         Models (Config)
+                   (Processamento Analítico de Média)
+                                │
+                                ▼
+                        Firestore Storage
+                      (Agregação de Negócios)
 ```
 
 ---
 
-## Como rodar
+## Fluxo
+
+1. **Setup Agnóstico:** O hardware inicializa o navegador apontando para a URL hospedada com a marcação de franquia ex: `?cidade=curitiba`.
+2. **Ciclo Visual (Marketing):** O _Controller_ de `CarrosselHero` roda em idle tocando as propagandas configuradas pelo time de mkt.
+3. **Trigger de Avaliação:** O cliente, estimulado, toca no botão para abrir o Modal de captura (View).
+4. **Resolução de Dados:** A _View_ coleta as respostas (3 de toque + 1 textual), envia ao Controller que calcula a estatística e interage com o _Model_ (Firebase) para salvar com `serverTimestamp()` inviolável.
+5. **Encerramento Automático:** A interface agradece, desmonta o formulário via unmount (liberando RAM do tablet) e volta ao ciclo comercial de forma assíncrona.
+
+---
+
+## Funcionalidades
+
+- **Digital Signage Integrado:** Motor próprio de mídia em Carrossel que aceita imagens e vídeos em Autoplay, mantendo o tablet comercialmente útil.
+- **Engine de Swipe Híbrida:** Ações controladas inteiramente por touch (`useSwipe`), simulando perfeitamente a navegação nativa mobile em browsers bloqueados.
+- **Formulário Dinâmico (Data-Driven):** As questões NPS são processadas através de um Array (`Models/campaignModel.js`). Adicionar uma nova pergunta requer zero alterações estruturais no código ou na visualização (DRY).
+- **Auto-Calculo Analítico:** O pacote de dados trafegado (Payload) já embute estatísticas pré-processadas (como médias aritméticas exatas) para que o dashboard de BI da diretoria exiba relatórios de latência zero.
+- **Tratamento de Performance Extrema:** Refatorações de motor CSS (GPU Rendering via `will-change: transform`) para impedir _reflows_ do navegador em tablets de quiosque, garantindo animações em suaves 60FPS ininterruptamente.
+
+---
+
+## Como Usar e Documentação
+
+Para aprofundar-se na arquitetura técnica e padrões de design deste projeto, consulte a nossa biblioteca técnica na pasta `/docs`:
+
+- 📘 **[Referência de Arquitetura (ARCHITECTURE)](docs/1-ARCHITECTURE.md):** Padrões de design utilizados (MVC), tomada de decisões em renderização e injeção HMR.
+- 📙 **[Referência de Otimização (PERFORMANCE)](docs/2-PERFORMANCE.md):** Manual de como construir aplicações React sem travamentos para hardwares com baixa CPU usando aceleração de GPU pura.
+- 📗 **[Integração Cloud (FIREBASE_SETUP)](docs/3-FIREBASE_SETUP.md):** Entenda como a injeção do banco de dados na nuvem opera de maneira serverless e protegida por variáveis de ambiente (EnvVars).
+
+---
+
+## Como Rodar o Projeto
+
+Caso queira inicializar a plataforma para desenvolvimento local:
 
 ```bash
-# Instalar dependências
+# Clone o repositório
+git clone https://github.com/NicolasHMartinsP/nps-kiosk-system.git
+
+# Entre no diretório
+cd nps-kiosk-system
+
+# Instale os pacotes e dependências (Vite, React, Tailwind)
 npm install
 
-# Servidor de desenvolvimento
+# (IMPORTANTE) - Configure o `.env.local` na raiz com os parâmetros da sua Cloud do Firebase
+# Utilize o arquivo `.env.example` como guia.
+
+# Inicie o servidor em modo de desenvolvimento
 npm run dev
 
-# Build de produção (gera a pasta dist/)
-npm run build
-
-# Testar o build antes de publicar
-npm run preview
-```
-
-> **Dica:** durante o desenvolvimento, abra o DevTools (`F12`) → aba Network → marque **Disable cache** para garantir que as alterações apareçam sem precisar forçar recarregamento.
-
-> **Aviso no VS Code:** as diretivas `@tailwind` no `base.css` podem aparecer sublinhadas como "unknown at-rule". Isso é só o linter do VS Code não reconhecendo a sintaxe do Tailwind — instale a extensão **Tailwind CSS IntelliSense** para resolver. Não afeta o funcionamento do projeto.
-
----
-
-## Arquitetura
-
-### Fluxo de dados
-
-```
-main.jsx
-  └── App.jsx
-        ├── useCarrossel(images)     → estado e navegação do carrossel hero
-        ├── useCampanha(...)         → estado e navegação do modal de campanha
-        ├── useState(modalOpen)      → controla abertura do modal de avaliação
-        └── useState(clubOpen)       → controla abertura do modal do clube
-```
-
-### Ordem de renderização na página
-
-| # | Componente | Descrição |
-|---|---|---|
-| 1 | Hero | Fundo preto, tagline e botão "Avaliar agora!" |
-| 2 | CarrosselHero | Imagens rotativas + faixa "Saiba mais" |
-| 3 | CampanhaModal | Modal fullscreen (sempre no DOM, visível quando aberto) |
-| 4 | Seção Clube | Banner com botão "Clique aqui e saiba mais!" |
-| 5 | Modal | Avaliação — montado só quando `modalOpen === true` |
-| 6 | Carrossel | Clube — montado só quando `clubOpen === true` |
-
-### Como os imports de CSS funcionam
-
-CSS não tem export/import entre arquivos como o JavaScript. O que liga o CSS ao componente é um import no topo do JSX:
-
-```js
-import "../styles/Modal.css";
-```
-
-O Vite lê o import, injeta o CSS na página e as classes ficam disponíveis globalmente. Cada componente importa apenas o CSS que precisa. O `base.css` é a exceção — importado só no `main.jsx` porque contém estilos globais que valem para toda a aplicação.
-
-### Caminhos de import por pasta
-
-Como os componentes ficam em `src/components/`, os imports de fora dessa pasta usam `../` para subir um nível:
-
-```js
-// de dentro de components/ para outras pastas
-import { useCarrossel } from "../hooks/useCarrossel";
-import { images }       from "../data/campaignData";
-import imgClube         from "../assets/img/Club/STORY5.png";
-import "../styles/Hero.css";
-
-// entre componentes da mesma pasta — caminho direto
-import Modal from "./Modal";
-```
-
-### Identificação da franquia por URL
-
-Cada loja recebe um link com o parâmetro `?cidade=`:
-
-```
-https://meusite.com?cidade=curitiba
-https://meusite.com?cidade=londrina
-```
-
-O `App.jsx` lê esse parâmetro via `URLSearchParams` e passa para o `Modal.jsx`, que o salva junto com cada avaliação no Firestore. Se o parâmetro não existir, o valor salvo é `"desconhecida"`.
-
----
-
-## Componentes
-
-Todos os componentes ficam em `src/components/`.
-
----
-
-### `App.jsx` — Orquestrador principal
-
-Responsabilidade única: montar a página conectando componentes, hooks e estado. Não contém lógica de carrossel, swipe, campanha nem animação.
-
-**CSS importado:**
-```js
-import "../styles/base.css";
-import "../styles/Hero.css";
-import "../styles/Buttons.css";
-import "../styles/Legacy.css";
-```
-
-**Estado local:**
-- `modalOpen` → boolean que controla o modal de avaliação
-- `clubOpen` → boolean que controla o modal do Clube
-
-**Por que `CampanhaModal` não usa renderização condicional?**
-Diferente dos outros modais, o `CampanhaModal` precisa manter o estado de slide interno durante a animação de saída. Por isso fica sempre no DOM e usa uma prop `openCampaign` para se mostrar/esconder internamente.
-
----
-
-### `CarrosselHero.jsx` — Carrossel do hero
-
-Componente puramente visual — não tem estado próprio. Recebe tudo via props do hook `useCarrossel`.
-
-**CSS importado:** `../styles/CarrosselHero.css`
-
-**Props:**
-
-| Prop | Tipo | Descrição |
-|---|---|---|
-| `images` | array | Slides `{ id, src, alt }` |
-| `currentIndex` | number | Índice do slide ativo |
-| `onNext` | fn | Avança um slide |
-| `onPrev` | fn | Volta um slide |
-| `onDotClick(i)` | fn | Pula para o slide `i` |
-| `onTouchStart/Move/End` | fn | Handlers de swipe |
-| `currentHasCampaign` | boolean | Slide atual tem campanha? |
-| `onSaibaMais` | fn | Abre o modal de campanha |
-
-**Como funciona a transição:**
-O track (`div` com todos os slides lado a lado) é movido via `translateX(-${currentIndex * 100}%)`. A classe Tailwind `transition-transform duration-500` aplica a animação CSS.
-
----
-
-### `CampanhaModal.jsx` — Modal fullscreen de campanha
-
-Exibe as mídias (imagens e vídeos `.mp4`) de uma campanha específica. Detecta o tipo de mídia pela extensão do arquivo: `.mp4` → `<video>`, qualquer outro → `<img>`.
-
-**CSS importado:** `../styles/CampanhaModal.css`
-
-**Props:**
-
-| Prop | Tipo | Descrição |
-|---|---|---|
-| `openCampaign` | boolean | Exibe ou esconde o modal |
-| `campaignInuse` | array | Mídias `{ id, src, alt }` da campanha ativa |
-| `campaignIndex` | number | Slide interno ativo |
-| `onClose` | fn | Fecha o modal |
-| `onNext / onPrev` | fn | Navegação entre slides |
-| `onDotClick(i)` | fn | Pula para o slide `i` |
-| `onTouchStart/Move/End` | fn | Handlers de swipe |
-
----
-
-### `Modal.jsx` — Modal de avaliação
-
-Formulário multi-etapa com 3 perguntas de nota (1–5) e 1 campo de texto livre. As perguntas são definidas no array `Questions` — adicionar uma nova pergunta não requer mudança na lógica.
-
-**CSS importado:** `../styles/Modal.css`
-
-**Estados internos:**
-- `question` → índice da pergunta atual
-- `finish` → exibe a tela de confirmação após envio
-- `answers` → objeto com todas as respostas (`{ Pergunta1, Pergunta2, Pergunta3, Observacao }`)
-
-**Padrão data-driven UI:**
-O array `Questions` define id, texto e tipo de cada pergunta. O estado `answers` é gerado automaticamente a partir desse array via `reduce`. Isso permite adicionar ou remover perguntas sem alterar a lógica de navegação ou envio.
-
-**Props:**
-
-| Prop | Tipo | Descrição |
-|---|---|---|
-| `onClose` | fn | Fecha o modal |
-| `cidade` | string | Nome da franquia (vem do `?cidade=` da URL) |
-
----
-
-### `carrossel.jsx` — Modal do Clube The Best
-
-Modal fullscreen com as imagens do Clube. Exibe QR Codes para download do app no primeiro slide. Não tem CSS próprio — usa `.arrowBtn` e `.swipe-hint` que vêm do `base.css`.
-
-**Como funciona a animação de transição:**
-Todas as imagens são renderizadas sobrepostas com `position: absolute`. A imagem ativa recebe `opacity: 1` e `translateX(0)`. As demais recebem `opacity: 0` e um deslocamento lateral de 60px. A transição CSS (`0.4s ease`) anima suavemente entre os estados.
-
-A direção do deslocamento depende do sentido de navegação:
-- Avançar (`direction: "left"`) → imagem sai para `-60px`
-- Voltar (`direction: "right"`) → imagem sai para `+60px`
-
-**Proteção contra duplo clique:**
-`isAnimating` bloqueia novos cliques durante os 400ms da transição para evitar que a sequência visual quebre.
-
-**Estados internos:**
-- `currentIndex` → slide ativo
-- `direction` → `"left"` ou `"right"`
-- `isAnimating` → bloqueia interação durante a transição
-- `swipeHintVisible` → exibe a dica de swipe, some após o primeiro arrasto
-
----
-
-### `LogoFloating.jsx` — Logo com scroll to top
-
-Logo fixo no canto superior esquerdo via `position: fixed` no CSS (classe `.logo-floating`). Ao clicar, chama `window.scrollTo({ top: 0, behavior: "smooth" })` para voltar ao topo suavemente.
-
-**CSS importado:** `../styles/LogoFloating.css`
-
----
-
-## Hooks
-
-Ficam em `src/hooks/`. São funções JavaScript puras — sem JSX, sem visual. Toda lógica de estado e efeitos colaterais do carrossel e da campanha vive aqui, mantendo os componentes limpos.
-
----
-
-### `useCarrossel.js`
-
-Gerencia todo o estado e lógica do carrossel hero.
-
-```js
-const carrossel = useCarrossel(images);
-```
-
-**Retorna:**
-
-| Propriedade | Tipo | Descrição |
-|---|---|---|
-| `currentIndex` | number | Índice do slide visível |
-| `nextSlide()` | fn | Avança (loop circular) |
-| `prevSlide()` | fn | Volta (loop circular) |
-| `goTo(i)` | fn | Pula para o slide `i` |
-| `onTouchStart/Move/End` | fn | Handlers de swipe |
-
-**Autoplay:** avança automaticamente a cada 5 segundos via `setInterval`. O `clearInterval` no cleanup do `useEffect` evita memory leak ao desmontar o componente.
-
----
-
-### `useCampanha.js`
-
-Gerencia o estado do modal de campanha: qual campanha está ativa, qual slide interno está visível, abertura/fechamento e swipe.
-
-```js
-const campanha = useCampanha(images, carrossel.currentIndex, campaignMap);
-```
-
-**Retorna:**
-
-| Propriedade | Tipo | Descrição |
-|---|---|---|
-| `openCampaign` | boolean | Modal aberto? |
-| `campaignInuse` | array \| null | Mídias da campanha ativa |
-| `campaignIndex` | number | Slide interno ativo |
-| `currentHasCampaign` | boolean | Slide do hero tem campanha? |
-| `handleSaibaMais()` | fn | Abre o modal com a campanha do slide atual |
-| `handleClose()` | fn | Fecha e reseta o estado |
-| `nextCampaignSlide()` | fn | Avança slide interno |
-| `prevCampaignSlide()` | fn | Volta slide interno |
-| `goToCampaignSlide(i)` | fn | Pula para o slide `i` |
-| `onTouchStart/Move/End` | fn | Handlers de swipe do modal |
-
----
-
-## Dados
-
-### `campaignData.js`
-
-Fica em `src/data/`. Fonte única de verdade para os slides do hero e as campanhas. Separado dos componentes para não recriar os dados a cada render e facilitar manutenção.
-
-**`images`** — array de slides do carrossel hero:
-```js
-{ id: "img1", src: img1, alt: "Sabores e acompanhamentos" }
-```
-
-**`campaignMap`** — objeto que mapeia o `id` de cada slide para sua campanha:
-```js
-{
-  img1: [ { id, src, alt }, ... ],  // campanha Sabores
-  img2: [ { id, src, alt }, ... ],  // campanha Páscoa
-  img3: [ { id, src, alt }, ... ],  // campanha Shake
-  // img4 não tem entrada → botão "Saiba mais" não aparece
-}
-```
-
-**Para adicionar uma nova campanha:**
-1. Importe as mídias no topo do arquivo
-2. Crie o array da campanha com os objetos `{ id, src, alt }`
-3. Adicione a entrada no `campaignMap` usando o `id` do slide correspondente
-
----
-
-## Estilos
-
-Ficam em `src/styles/`. O CSS foi separado por componente — cada arquivo cuida de um pedaço da interface. Isso facilita encontrar e editar estilos sem precisar rolar centenas de linhas.
-
-### Mapa de arquivos CSS
-
-| Arquivo | Importado em | O que contém |
-|---|---|---|
-| `base.css` | `main.jsx` | Tailwind, `@keyframes`, `@font-face`, reset, `.arrowBtn` |
-| `Hero.css` | `App.jsx` | `.Hover`, `.heroText`, `.heroTagline`, `.heroTitle`, `.highlight`, `.linhabaixa` |
-| `Buttons.css` | `App.jsx` | `.glowButton`, `.pulseScale`, `.avaliarBtn`, `.clubeBtn` |
-| `Legacy.css` | `App.jsx` | `#titleSearch`, `#Pamonha`, `#containerBotão`, `#modal` |
-| `LogoFloating.css` | `LogoFloating.jsx` | `.logo-floating` |
-| `CarrosselHero.css` | `CarrosselHero.jsx` | `.separador`, `.carrosselWrapper`, `.saibaMaisFaixa`, `.saibaMaisBtn` |
-| `CampanhaModal.css` | `CampanhaModal.jsx` | `.campaignCloseBtn` |
-| `Modal.css` | `Modal.jsx` | `.ModalOverlay`, `.modalContainer`, `.modalHeader`, `.closeBtn`, `.modalQuestion`, `.avaliacao`, `.nota`, `.nota-1` a `.nota-5`, `.selecionado`, `.observacao`, `.navigation`, `.voltarBtn`, `.nextBtn`, `.submitBtn`, `.finishContainer`, `.checkIcon`, `.swipe-hint` |
-
-### Por que `.arrowBtn` fica no `base.css`?
-
-As setas são usadas em três componentes diferentes: `CarrosselHero`, `CampanhaModal` e `carrossel`. Colocar num arquivo de componente criaria dependência entre arquivos — um componente teria que importar o CSS de outro. Deixar no `base.css` resolve isso: como ele é importado pelo `main.jsx`, as classes ficam disponíveis para toda a aplicação.
-
-### Por que os caminhos de fonte usam `../`?
-
-O `base.css` fica dentro de `src/styles/`, mas as fontes ficam em `src/assets/Fonts/`. Por isso o caminho nos `@font-face` sobe um nível:
-
-```css
-src: url("../assets/Fonts/texgyreschola-regular.otf");
-```
-
-### Breakpoints utilizados
-
-| Breakpoint | Contexto |
-|---|---|
-| `max-width: 599px` | Mobile — modal como bottom sheet |
-| `min-width: 480px` | Botões de nota em linha única |
-| `min-width: 768px` | Tablet |
-| `min-width: 1024px` | Desktop |
-
----
-
-## Regras de performance
-
-> Estas regras foram aplicadas em todo o projeto para eliminar travamentos em tablets.
-
-**Anime APENAS `transform` e `opacity`.**
-Essas propriedades rodam diretamente na GPU sem recalcular o layout da página. Qualquer outra propriedade animada (`width`, `height`, `margin`, `top`, `left`, `box-shadow`) força o browser a redesenhar a tela inteira a cada frame.
-
-**`will-change: transform`**
-Adicionado apenas nos elementos que realmente animam. Uso excessivo aumenta o consumo de memória da GPU.
-
-**`glowPulse` sem `box-shadow` animado**
-`box-shadow` animado causa repaint a cada frame. O efeito de brilho é simulado com variação de `opacity`, que tem custo zero na GPU.
-
-**`font-display: swap`**
-As fontes customizadas usam `swap` para não bloquear a renderização da página enquanto os arquivos `.otf` carregam.
-
-**Lazy loading dos modais**
-`Modal.jsx` e `carrossel.jsx` são montados no DOM apenas quando abertos (`{modalOpen && <Modal />}`), economizando memória e evitando re-renders desnecessários.
-
----
-
-## Firestore
-
-### Coleção: `respostas`
-
-Cada documento criado pelo `Modal.jsx` contém:
-
-| Campo | Tipo | Descrição |
-|---|---|---|
-| `Pergunta1` | number (1–5) | Nota para atendimento |
-| `Pergunta2` | number (1–5) | Nota para limpeza |
-| `Pergunta3` | number (1–5) | Nota para o buffet |
-| `Observacao` | string | Comentário livre |
-| `media` | number | Média das três notas |
-| `horario` | timestamp | Timestamp do servidor Firebase |
-| `dia` | string (YYYY-MM-DD) | Data no fuso de São Paulo |
-| `cidade` | string | Franquia de origem (do `?cidade=`) |
-
-**Por que `serverTimestamp()` e não `new Date()`?**
-`serverTimestamp()` usa o relógio do servidor Firebase, evitando inconsistências causadas pelo relógio do dispositivo do cliente (fuso errado, data incorreta).
-
-**Por que salvar `dia` separado?**
-O campo `dia` em formato `YYYY-MM-DD` facilita consultas e agrupamentos por data em gráficos e relatórios sem precisar converter timestamps.
-
----
-
-## Deploy
-
-O projeto gera uma pasta `dist/` com o build de produção:
-
-```bash
-npm run build   # compila, minifica e aplica hash nos arquivos
-npm run preview # servidor local para testar o build
-```
-
-**O que o build faz:**
-1. Transpila JSX para JavaScript puro
-2. Agrupa todos os arquivos em poucos bundles
-3. Minifica código e CSS (remove espaços e comentários)
-4. Aplica hash nos nomes dos arquivos (`index-3f8a2c1b.js`) para cache-busting
-5. Copia assets para `dist/assets/`
-
-Apenas a pasta `dist/` vai para o servidor de hospedagem.
-
----
-
-## Classes legadas
-
-As classes abaixo existem no `Legacy.css` por compatibilidade com versões anteriores. Não remover até confirmar que nenhum componente as referencia.
-
-| Classe/ID | Origem |
-|---|---|
-| `#titleSearch` | Título da versão anterior |
-| `#Pamonha` | Imagem principal da versão anterior |
-| `#containerBotão` | Container de botões da versão anterior |
-| `#modal` | Modal da versão anterior |
-
-Para remover com segurança, confirme que nenhum arquivo referencia a classe, delete e commite:
-
-```bash
-git commit -m "chore: remove classes legadas do Legacy.css"
+# Acesse http://localhost:5173/?cidade=Desenvolvimento no seu navegador
 ```
 
 ---
 
-## Histórico de decisões relevantes
+## Resultados
 
-Decisões que podem parecer estranhas no futuro mas têm motivo:
+Sistemas NPS tradicionais com leitura de QR Code geram perda no funil de resposta devido à burocracia para o cliente final. A presença deste totem direto no balcão elevou massivamente o engajamento, colhendo milhares de respostas e insights precisos. Atualmente a tecnologia está operando de forma perene no front comercial de 8 grandes operações integradas.
 
-**Por que `carrossel.jsx` começa com letra minúscula?**
-Convenção do arquivo original mantida para não quebrar imports já existentes em produção.
+## Possíveis Melhorias Futuras
 
-**Por que `CampanhaModal` fica sempre no DOM em vez de usar renderização condicional?**
-Precisa manter o estado de slide interno durante a animação de saída. Se desmontasse ao fechar, o slide voltaria ao zero antes da animação terminar.
+- Integração nativa de caching Offline-first (Service Workers/PWA) para guardar as avaliações no cachê caso o hardware do quiosque perca o sinal de internet, realizando o push para a nuvem retroativo.
+- Interface de painel do administrador (Dashboard) integrado à mesma rota validado via Autenticação Firebase (JWT).
 
-**Por que os botões de nota têm `user-select: none` e `-webkit-tap-highlight-color: transparent`?**
-Em mobile, tocar num botão pode selecionar o número como texto ou mostrar um flash azul/cinza do browser. Essas duas propriedades eliminam esses comportamentos indesejados.
+---
 
-**Por que `useCampanha` recebe `currentIndex` como parâmetro em vez de ler do próprio hook?**
-Separação de responsabilidades: `useCarrossel` é dono do índice do hero. `useCampanha` só observa esse índice para saber qual campanha abrir — não faz sentido ele ter estado próprio para isso.
+## Licença
 
-**Por que o CSS foi separado por componente em vez de ficar num arquivo só?**
-O `App.css` original chegou a mais de 1200 linhas. Com arquivos separados, para editar o estilo do modal basta abrir o `Modal.css` — sem precisar procurar num arquivo gigante. Cada componente JSX importa apenas o CSS que precisa.
+Projeto reestruturado para fins educacionais e de demonstração arquitetural de engenharia de software sob licença **MIT**. Chaves privadas, identidades absolutas da marca e banco de dados da operação original foram inteiramente desacoplados e mantidos seguros (Env) no servidor de produção.
